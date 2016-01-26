@@ -5,6 +5,7 @@ Game.Menu = function(game){
 
 Game.Menu.prototype =  {
     create: function() {
+        this.game.stage.backgroundColor = '#213D5E';
 
         this.title = this.game.add.sprite(Game.w/2,Game.h/2-100,'title');
         this.title.anchor.setTo(0.5,0.5);
@@ -14,8 +15,8 @@ Game.Menu.prototype =  {
         this.instructions.scale.y = 0.5;
 
         // Start Message
-
-        var clickText = this.game.add.bitmapText(Game.w/2, Game.h/2-50, 'minecraftia', '~click to start~', 24); 
+        var clickText = this.game.add.bitmapText(Game.w/2, Game.h/2, 'minecraftia', '~click to start~', 24); 
+        clickText.anchor.setTo(0.5);
 
     },
     update: function() {

@@ -1,7 +1,19 @@
+var tileSize = 64;
+var dRows = 10;
+var dCols = 12;
+var dialogue;
+
 var Game = {
-  w: 800,
-  h: 600
+  w: tileSize*dCols,
+  h: tileSize*dRows,
+  camera: {x:0, y:0}
 };
+
+
+// var Game = {
+//   w: 800,
+//   h: 600
+// };
 
 // var w = 800;
 // var h = 600;
@@ -49,6 +61,14 @@ Game.Load.prototype = {
 
     //Load button for twitter
     this.game.load.image('twitter','assets/images/twitter.png');
+
+    this.game.load.tilemap('test','assets/atlas/test.json',null,Phaser.Tilemap.TILED_JSON);
+    this.game.load.spritesheet('town','assets/images/town.png',tileSize,tileSize,36);
+
+    this.game.load.spritesheet('player','assets/images/hero_x64.png',64,64,12);
+
+    dialogue = new Dialogue(this.game);
+    dialogue.preload();
 
     // Music Track
     // this.game.load.audio('music','soundtrack.mp3');

@@ -25,7 +25,31 @@ Game.Play = function(game) {
 
 Game.Play.prototype = {
   create: function() {
+    this.game.physics.startSystem(Phaser.Physics.P2JS); // start the physics
+    this.game.physics.p2.setBoundsToWorld(true, true, true, true, false);
+
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
+    // this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
+
+    this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
+    this.map = this.game.add.tilemap('test');
+    this.map.addTilesetImage('town');
+    this.layer1 = this.map.createLayer('layer1');
+    this.layer1.resizeWorld();
+    this.layer2 = this.map.createLayer('layer2');
+    this.layer2.resizeWorld();
+
+    // Gray Brick
+    this.map.setCollision([13,14,15]);
+
+    // Trees
+    this.map.setCollision([16,17,18],true,'layer2');
+
+    this.physics.p2.convertTilemap(this.map, this.layer1);
+    this.physics.p2.convertTilemap(this.map, this.layer2);
+
+    this.player = new Player(this.game, 5,5);
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -70,8 +94,9 @@ Game.Play.prototype = {
   //     this.music.volume = 0.5;
   //   }
   // },
-  // render: function() {
-  //   game.debug.text('Health: ' + tri.health, 32, 96);
-  // }
+  render: function() {
+    // game.debug.text('Health: ' + tri.health, 32, 96);
+    this.game.debug.text('Camera: ' + JSON.stringify(Game.camera), 32, 96);
+  }
 
 };
