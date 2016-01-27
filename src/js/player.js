@@ -7,10 +7,14 @@ var Player = function(game, tilex, tiley, map, layers) {
   this.isMoving = false;
 
   this.map = map;
-  this.layers = [];
-  for(var i=0;i < layers.length;i++) {
-    this.layers.push(layers[i].index);
-  }
+
+  this.layers = layers;
+
+  // this.layers = [];
+  // for(var i=0;i < layers.length;i++) {
+  //   this.layers.push(layers[i].index);
+  // }
+
   console.log(this.layers);
   this.marker = new Phaser.Point(tilex,tiley);
   this.marker.x = tilex;
@@ -109,7 +113,7 @@ Player.prototype.moveTo = function(x,y) {
   if (this.isMoving || this.cantMove(x, y)) {return;}
   this.isMoving = true;
 
-  this.game.add.tween(this).to({x: this.x + x*64, y: this.y + y*64}, 80, 'Linear', true)
+  this.game.add.tween(this).to({x: this.x + x*64, y: this.y + y*64}, 64, 'Linear', true)
     .onComplete.add(function() {
       this.isMoving = false;
       this.marker.x += x;
@@ -120,12 +124,24 @@ Player.prototype.cantMove = function(x,y) {
   var newx = this.marker.x + x;
   var newy = this.marker.y + y;
 
-  var newtile = this.map.getTile(newx, newy, 0,true); 
+  var tile1 = this.map.getTile(newx, newy, 0); 
 
-  if (newtile === null) {
+  //Block Moving onto a non-existent tile
+  if (tile1 === null) {
     return true;
   }
-  return this.map.getTile(newx, newy, 0,true).collideDown;
+
+  //Block Layer 1 Collisions
+  if (this.map.getTile(newx, newy, 0).collideDown) {
+    return true;
+  }
+
+  //Block Layer 2 Collisions if applicable
+  if (this.map.getTile(newx, newy, 1) !== null) {
+    return this.map.getTile(newx, newy, 1).collideDown;
+  }
+  return false;
+
 };
 
 // Player.prototype.movements = function() {
@@ -184,7 +200,7 @@ Player.prototype.updatecamera = function() {
     }
     this.tweening = true;
     
-    var speed = 700;
+    var speed = 300;
     var toMove = false;
 
     if (this.y > this.game.camera.y + Game.h - 64) {

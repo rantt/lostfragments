@@ -52,7 +52,7 @@ Game.Play.prototype = {
     // this.physics.p2.convertTilemap(this.map, this.layer1);
     // this.physics.p2.convertTilemap(this.map, this.layer2);
 
-    this.player = new Player(this.game, 5,5, this.map, [this.layer1, this.layer2]);
+    this.player = new Player(this.game, 5,5, this.map, 2);
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -81,8 +81,8 @@ Game.Play.prototype = {
     // this.physics.arcade.collide(this.player, this.layer1);
     // this.physics.arcade.collide(this.player, this.layer2);
 
-    this.marker.x = this.math.snapToFloor(Math.floor(this.player.x), 64) / 64;
-    this.marker.y = this.math.snapToFloor(Math.floor(this.player.y), 64) / 64;
+    // this.marker.x = this.math.snapToFloor(Math.floor(this.player.x), 64) / 64;
+    // this.marker.y = this.math.snapToFloor(Math.floor(this.player.y), 64) / 64;
     //
     // var i = this.layer1.index;
     // var x = this.marker.x;
@@ -96,11 +96,11 @@ Game.Play.prototype = {
     
 
     // if (Game.camera == ) {
-    if (Game.camera.x == "1" && Game.camera.y == "0" ) {
-      this.danger = true;
-    }else {
-      this.danger = false;
-    }
+    // if (Game.camera.x == "1" && Game.camera.y == "0" ) {
+    //   this.danger = true;
+    // }else {
+    //   this.danger = false;
+    // }
 
     // // Toggle Music
     // muteKey.onDown.add(this.toggleMute, this);
