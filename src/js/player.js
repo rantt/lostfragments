@@ -1,4 +1,4 @@
-var Player = function(game, tilex, tiley, map, layers) {
+var Player = function(game, tilex, tiley, map) {
   this.game = game;
 
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
@@ -6,19 +6,11 @@ var Player = function(game, tilex, tiley, map, layers) {
   this.cursor = this.game.input.keyboard.createCursorKeys();
   this.isMoving = false;
 
+  // this.moveDelay = 200;
+  // this.moveWait = this.game.time.now + this.moveDelay;
+
   this.map = map;
-
-  this.layers = layers;
-
-  // this.layers = [];
-  // for(var i=0;i < layers.length;i++) {
-  //   this.layers.push(layers[i].index);
-  // }
-
-  console.log(this.layers);
   this.marker = new Phaser.Point(tilex,tiley);
-  this.marker.x = tilex;
-  this.marker.y = tiley;
 
   //Setup WASD and extra keys
   wKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -31,8 +23,7 @@ var Player = function(game, tilex, tiley, map, layers) {
   this.game.physics.arcade.enable(this); // set up player physics
   // this.game.physics.p2.enable(this); // set up player physics
   this.body.fixedRotation = true; // no rotation
-
-  this.body.moves = false;
+  // this.body.moves = false;
 
   this.body.collideWorldBounds = true;
   this.game.add.existing(this);
@@ -47,7 +38,6 @@ var Player = function(game, tilex, tiley, map, layers) {
   this.animations.add('right', [4, 11], 6, true);
   this.animations.add('left', [5, 10], 6, true);
 
-
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -56,37 +46,24 @@ Player.prototype.update = function() {
   this.updatecamera();
 };
 Player.prototype.movements = function() {
-    // this.body.velocity.x = 0;
-    // this.body.velocity.y = 0;
 
-    // var speed = 275;
-
-    if (this.tweening) {
-      //Don't move while camera is panning
-      // this.body.velocity.x = 0;
-      // this.body.velocity.y = 0;
-    }else{
-      //Don't move when the dialogue box is visible
+    if (!this.tweening) {
       if ((dialogue.hidden) && (this.cursor.left.isDown || aKey.isDown)) {
-        // this.body.velocity.x = -speed;
         this.moveTo(-1,0);
         this.direction = 'left';
         this.animations.play('left');
       }
       else if ((dialogue.hidden) && (this.cursor.right.isDown || dKey.isDown)) {
-        // this.body.velocity.x = speed;
         this.moveTo(1,0);
         this.direction = 'right';
         this.animations.play('right');
       }
       else if ((dialogue.hidden) && (this.cursor.up.isDown || wKey.isDown)) {
-        // this.body.velocity.y = -speed;
         this.moveTo(0,-1);
         this.direction = 'up';
         this.animations.play('up');
       }
       else if ((dialogue.hidden) && (this.cursor.down.isDown || sKey.isDown)) {
-        // this.body.velocity.y = speed;
         this.moveTo(0,1);
         this.direction = 'down';
         this.animations.play('down');
@@ -111,13 +88,17 @@ Player.prototype.movements = function() {
 };
 Player.prototype.moveTo = function(x,y) {
   if (this.isMoving || this.cantMove(x, y)) {return;}
+  // if (this.isMoving || this.cantMove(x, y) || this.moveWait > this.game.time.now) {return;}
   this.isMoving = true;
 
-  this.game.add.tween(this).to({x: this.x + x*64, y: this.y + y*64}, 64, 'Linear', true)
-    .onComplete.add(function() {
-      this.isMoving = false;
+  // this.moveWait = this.game.time.now + this.moveDelay;
+  // this.x = this.x + x*64;
+  // this.y = this.y + y*64;
+
+  this.game.add.tween(this).to({x: this.x + x*64, y: this.y + y*64}, 80, Phaser.Easing.Linear.None, true).onComplete.add(function() {
       this.marker.x += x;
       this.marker.y += y;
+      this.isMoving = false;
     },this); 
 };
 Player.prototype.cantMove = function(x,y) {
@@ -143,57 +124,6 @@ Player.prototype.cantMove = function(x,y) {
   return false;
 
 };
-
-// Player.prototype.movements = function() {
-//     this.body.velocity.x = 0;
-//     this.body.velocity.y = 0;
-//
-//     var speed = 275;
-//
-//     if (this.tweening) {
-//       //Don't move while camera is panning
-//       this.body.velocity.x = 0;
-//       this.body.velocity.y = 0;
-//     }else{
-//       //Don't move when the dialogue box is visible
-//       if ((dialogue.hidden) && (this.cursor.left.isDown || aKey.isDown)) {
-//         this.body.velocity.x = -speed;
-//         this.direction = 'left';
-//         this.animations.play('left');
-//       }
-//       else if ((dialogue.hidden) && (this.cursor.right.isDown || dKey.isDown)) {
-//         this.body.velocity.x = speed;
-//         this.direction = 'right';
-//         this.animations.play('right');
-//       }
-//       else if ((dialogue.hidden) && (this.cursor.up.isDown || wKey.isDown)) {
-//         this.body.velocity.y = -speed;
-//         this.direction = 'up';
-//         this.animations.play('up');
-//       }
-//       else if ((dialogue.hidden) && (this.cursor.down.isDown || sKey.isDown)) {
-//         this.body.velocity.y = speed;
-//         this.direction = 'down';
-//         this.animations.play('down');
-//       }
-//       else {
-//         if (this.direction === 'up') {
-//           this.frame = 1;
-//         }
-//         else if (this.direction === 'down') {
-//           this.frame = 0;
-//         }
-//         else if (this.direction === 'right') {
-//           this.frame = 2;
-//         }
-//         else if (this.direction === 'left') {
-//           this.frame = 3;
-//         }
-//         this.animations.stop();
-//       }
-//     } 
-//
-// };
 Player.prototype.updatecamera = function() {
     if (this.tweening) {
       return;

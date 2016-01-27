@@ -31,6 +31,8 @@ Game.Play.prototype = {
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+    this.randomEncounters = {'x0_y0':0,'x1_y0':0.1};
+
     this.danger = false;
     this.marker = new Phaser.Point(); ;
     this.directions = {};
@@ -52,7 +54,8 @@ Game.Play.prototype = {
     // this.physics.p2.convertTilemap(this.map, this.layer1);
     // this.physics.p2.convertTilemap(this.map, this.layer2);
 
-    this.player = new Player(this.game, 5,5, this.map, 2);
+    this.player = new Player(this.game, 5,5, this.map);
+    this.lastPosition = new Phaser.Point(5, 5);
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -77,30 +80,22 @@ Game.Play.prototype = {
   },
 
   update: function() {
-    // this.player.update();
-    // this.physics.arcade.collide(this.player, this.layer1);
-    // this.physics.arcade.collide(this.player, this.layer2);
 
-    // this.marker.x = this.math.snapToFloor(Math.floor(this.player.x), 64) / 64;
-    // this.marker.y = this.math.snapToFloor(Math.floor(this.player.y), 64) / 64;
-    //
-    // var i = this.layer1.index;
-    // var x = this.marker.x;
-    // var y = this.marker.y;
+    if (this.player.marker.x !== this.lastPosition.x || this.player.marker.y !== this.lastPosition.y) {
+      this.lastPosition.x = this.player.marker.x;
+      this.lastPosition.y = this.player.marker.y;
 
-    // this.directions[Phaser.LEFT] = this.map.getTileLeft(i, x, y);
-    // this.directions[Phaser.RIGHT] = this.map.getTileRight(i, x, y);
-    // this.directions[Phaser.UP] = this.map.getTileAbove(i, x, y);
-    // this.directions[Phaser.DOWN] = this.map.getTileBelow(i, x, y);
-    // console.log(this.directions);
-    
+      var encounter = parseFloat(this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]);
+      var random = Math.random();
 
-    // if (Game.camera == ) {
-    // if (Game.camera.x == "1" && Game.camera.y == "0" ) {
-    //   this.danger = true;
-    // }else {
-    //   this.danger = false;
-    // }
+      console.log(random + ' < ' + encounter);
+
+      if (encounter < random) {
+        console.log('Out Combat');
+      }else {
+        console.log('In Combat');
+      }
+    }
 
     // // Toggle Music
     // muteKey.onDown.add(this.toggleMute, this);
@@ -129,6 +124,7 @@ Game.Play.prototype = {
     this.game.debug.text('Camera: ' + JSON.stringify(Game.camera), 32, 96);
     this.game.debug.text('Danger: ' + this.danger, 32, 114);
     this.game.debug.text('this.marker.x:' + this.marker.x + 'this.marker.y:'+this.marker.y, 32, 146);
+    this.game.debug.text('encounter% '+ (this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]), 32, 164);
   }
 
 };
