@@ -98,6 +98,8 @@ Player.prototype.moveTo = function(x,y) {
     },this); 
 };
 Player.prototype.cantMove = function(x,y) {
+  if (this.inCombat) {return true;}
+
   var newx = this.marker.x + x;
   var newy = this.marker.y + y;
 

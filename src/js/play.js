@@ -98,7 +98,7 @@ Game.Play.prototype = {
   update: function() {
 
     if (this.player.inCombat) {
-      
+     console.log('FIGHTING'); 
 
     }else {
       // Check For an Encounter
@@ -114,6 +114,7 @@ Game.Play.prototype = {
         if (encounter < random) {
           // console.log('Out Combat');
         }else {
+          this.player.inCombat = true;
           // console.log('In Combat');
         }
       }
