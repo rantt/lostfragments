@@ -7,6 +7,7 @@ var Enemy = function(game, options) {
   this.health = options['health'];
   this.power = options['power'];
   this.flee = parseFloat(options['flee']);
+  this.level = parseInt(options['level']);
 }; 
 
 Enemy.prototype = Object.create(Phaser.Sprite.prototype);
@@ -16,6 +17,7 @@ Enemy.prototype.reset = function(options) {
   this.anchor.setTo(0.5);
   this.scale.x = 4;
   this.scale.y = 4;
+  this.level = parseInt(options['level']);
   this.health = options['health'];
   this.power = options['power'];
   this.flee = parseFloat(options['flee']);

@@ -33,10 +33,10 @@ Game.Play.prototype = {
 
     this.randomEncounters = {'x0_y0':0,'x1_y0':0.1};
 
-    this.movementTimer = 0;
+    // this.movementTimer = 0;
 
     this.danger = false;
-    this.marker = new Phaser.Point(); ;
+    this.marker = new Phaser.Point();
     this.directions = {};
 
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
@@ -72,24 +72,8 @@ Game.Play.prototype = {
     // muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
 
-    this.stats_box = new Panel(this.game, 50, 100, 3, 4, 64, 'box');
 
-    ////// STATS BOX //////
-    //new Panel(game, x, y, width, height, tileSize, spritesheet)
-    this.stats_box = new Panel(this.game, 50, 100, 3, 4, 64, 'box');
-
-    this.level_text = this.game.add.bitmapText(40, 100, 'minecraftia', 'Level: '+this.player.level, 24); 
-    this.level_text.fixedToCamera = true;
-    this.stats_box.add(this.level_text);
-    
-    this.health_text = this.game.add.bitmapText(40, 136, 'minecraftia', 'Health: '+this.player.health, 24); 
-    this.health_text.fixedToCamera = true;
-    this.stats_box.add(this.health_text);
-    
-    this.gold_text = this.game.add.bitmapText(40, 172, 'minecraftia', 'Gold: '+this.player.gold, 24); 
-    this.gold_text.fixedToCamera = true;
-    this.stats_box.add(this.gold_text);
-
+    this.player.loadStats();
 
 		this.turn = this.player;
     this.battleInitiated = false;
@@ -101,7 +85,7 @@ Game.Play.prototype = {
 		this.battleGroup.add(this.battleGround);
 
 
-		this.enemy = new Enemy(this.game, {'sheet': 'slime', 'health': 4, 'power': 2,'flee': 1});
+		this.enemy = new Enemy(this.game, {'sheet': 'slime', 'health': 4, 'power': 2,'flee': 1,'level':1});
 
 		this.battleGroup.add(this.enemy);
     this.attack_button = this.game.add.button(Game.w - 96, 192, this.makeBox(128,64),function(){
@@ -123,7 +107,8 @@ Game.Play.prototype = {
 
     this.potion_button = this.game.add.button(Game.w - 96, 288, this.makeBox(128,64),function(){
 			this.player.takePotion(4);
-			this.health_text.setText('Health: '+this.player.health);
+      this.player.refreshStats();
+			// this.player.health_text.setText('Health: '+this.player.health);
 			this.turn = this.enemy;
       this.combatWait = this.game.time.now + 1000;
 			},this); 
@@ -172,9 +157,10 @@ Game.Play.prototype = {
 			// console.log('FIGHTING'); 
       if (this.battleInitiated === false) {
 				this.enemy.kill();
-				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0});
+				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 2});
+        console.log('el'+this.enemy.level);
         this.battleInitiated = true;
-        this.stats_box.visible = true;
+        this.player.stats_box.visible = true;
         this.battleGroup.visible = true;
         this.player.alpha = 0;
       }
@@ -182,27 +168,38 @@ Game.Play.prototype = {
 			if (this.enemy.health <= 0) {
 				this.player.inCombat = false;
 				console.log('combat over');
-
 				this.battleGroup.visible = false;
         this.battleInitiated = false;
         this.player.alpha = 1;
 			}
 			if (this.player.health === 0) {
-				this.enemy.kill();
-				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0});
+				// this.enemy.kill();
+				// this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level':1});
 				this.battleGroup.visible = false;
 				this.player.kill();
 				this.player.reset(5, 7);
-				this.health_text.setText('Health: '+this.player.health);
-        this.battleInitiated = false;
+        this.player.refreshStats();
         this.player.alpha = 1;
+        this.battleInitiated = false;
 			}
 
 			//Begin Combat
 			if (this.turn === this.enemy && this.game.time.now > this.combatWait) {
 				this.turn = this.player;
-				this.player.health -= this.enemy.power;
-				this.health_text.setText('Health: '+this.player.health);
+        var hitChance = parseFloat(0.9 + (this.enemy.level - this.player.level)*0.1);
+        console.log('hc'+hitChance);
+        if (Math.random < hitChance) {
+          console.log('player hit');
+          this.player.health -= this.enemy.power;
+          this.player.refreshStats();
+        }else {
+          console.log('player missed');
+        }
+        // console.log('plvl'+this.player.level+' elvl'+this.enemy.level);
+        // if (this.enemy.level > parseInt(this.player.level)) {
+        //   hitChance += Math.abs(this.enemy.
+        // }
+
 			}
 
     }else {
@@ -224,15 +221,6 @@ Game.Play.prototype = {
         }
       }
 
-      // Show Stats Menu when player is standing still
-      if (this.player.isMoving) {
-        this.movementTimer = this.game.time.now + 1000;
-        this.stats_box.visible = false;
-      }else {
-        if (this.game.time.now > this.movementTimer) {
-          this.stats_box.visible = true;
-        }
-      }
     }
 
 

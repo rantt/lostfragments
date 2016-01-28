@@ -2,7 +2,7 @@ var Player = function(game, tilex, tiley, map) {
   this.game = game;
 
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
-  this.level = 1;
+  this.level = 3;
   this.health = this.maxHealth();
   this.gold = 0;
   this.inCombat = false
@@ -27,6 +27,7 @@ var Player = function(game, tilex, tiley, map) {
 
   this.game.add.existing(this);
 
+
   this.direction = 'down';
   this.animations.add('down', [6, 7], 6, true);
   this.animations.add('up', [8, 9], 6, true);
@@ -39,7 +40,7 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.reset = function(tilex,tiley) {
 
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
-  this.level = 1;
+  // this.level = 1;
   this.health = this.maxHealth();
   this.gold = 0;
   this.inCombat = false
@@ -60,9 +61,31 @@ Player.prototype.reset = function(tilex,tiley) {
   this.animations.add('left', [5, 10], 6, true);
 
 };
+Player.prototype.loadStats = function() {
+    ////// STATS BOX //////
+    //new Panel(game, x, y, width, height, tileSize, spritesheet)
+    this.stats_box = new Panel(this.game, 50, 100, 3, 4, 64, 'box');
+
+    this.level_text = this.game.add.bitmapText(40, 100, 'minecraftia', 'Level: '+this.level, 24); 
+    this.level_text.fixedToCamera = true;
+    this.stats_box.add(this.level_text);
+    
+    this.health_text = this.game.add.bitmapText(40, 136, 'minecraftia', 'Health: '+this.health, 24); 
+    this.health_text.fixedToCamera = true;
+    this.stats_box.add(this.health_text);
+    
+    this.gold_text = this.game.add.bitmapText(40, 172, 'minecraftia', 'Gold: '+this.gold, 24); 
+    this.gold_text.fixedToCamera = true;
+    this.stats_box.add(this.gold_text);
+};
+Player.prototype.refreshStats = function() {
+  this.level_text.setText('Level: '+this.level);
+  this.health_text.setText('Health: '+this.health);
+  this.gold_text.setText('Gold: '+this.gold);
+};
 Player.prototype.maxHealth = function() {
 	return 8 + this.level * 2;
-},
+};
 Player.prototype.takePotion = function(hp) {
 	console.log(this.maxHealth());
 	if (this.health + hp > this.maxHealth()) {
@@ -74,6 +97,16 @@ Player.prototype.takePotion = function(hp) {
 	return this.health;
 };
 Player.prototype.update = function() {
+  // Show Stats Menu when player is standing still
+  if (this.isMoving) {
+    this.movementTimer = this.game.time.now + 1000;
+    this.stats_box.visible = false;
+  }else {
+    if (this.game.time.now > this.movementTimer) {
+      this.stats_box.visible = true;
+    }
+  }
+
   this.movements();
   this.updatecamera();
 };
