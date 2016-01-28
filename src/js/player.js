@@ -37,7 +37,6 @@ var Player = function(game, tilex, tiley, map) {
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.reset = function(tilex,tiley) {
-  // this.game = game;
 
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
   this.level = 1;
@@ -46,7 +45,6 @@ Player.prototype.reset = function(tilex,tiley) {
   this.inCombat = false
   this.isMoving = false;
 
-  // this.map = map;
   this.marker = new Phaser.Point(tilex,tiley);
 
   this.game.physics.arcade.enable(this); // set up player physics

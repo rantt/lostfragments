@@ -72,6 +72,8 @@ Game.Play.prototype = {
     // muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
 
+    this.stats_box = new Panel(this.game, 50, 100, 3, 4, 64, 'box');
+
     ////// STATS BOX //////
     //new Panel(game, x, y, width, height, tileSize, spritesheet)
     this.stats_box = new Panel(this.game, 50, 100, 3, 4, 64, 'box');
@@ -90,15 +92,13 @@ Game.Play.prototype = {
 
 
 		this.turn = this.player;
+    this.battleInitiated = false;
 
 		this.battleGroup = this.game.add.group();
 
     this.battleGround = this.game.add.sprite(Game.w/2+18, Game.h/2, 'bg1');
-    // this.battleGround.fixedToCamera = true;
     this.battleGround.anchor.setTo(0.5);
-    // this.battleGround.visible = false;
 		this.battleGroup.add(this.battleGround);
-    // this.battleGround.visible = false;
 
 
 		this.enemy = new Enemy(this.game, {'sheet': 'slime', 'health': 4, 'power': 2,'flee': 1});
@@ -110,6 +110,7 @@ Game.Play.prototype = {
 				this.enemy.health -= this.player.level;
   			this.game.add.tween(this.enemy).to({tint: 0xff0000},100).to({tint: 0xffffff},100).start();
 				this.turn = this.enemy;
+        this.combatWait = this.game.time.now + 1000;
 			}
 
 		},this); 
@@ -121,10 +122,10 @@ Game.Play.prototype = {
 		this.battleGroup.add(this.attack_text);
 
     this.potion_button = this.game.add.button(Game.w - 96, 288, this.makeBox(128,64),function(){
-			// this.player.health += 4;
 			this.player.takePotion(4);
-			// this.health_text.setTo(this.player.takePotion(4));
+			this.health_text.setText('Health: '+this.player.health);
 			this.turn = this.enemy;
+      this.combatWait = this.game.time.now + 1000;
 			},this); 
 		this.potion_button.anchor.setTo(0.5);
 		this.potion_button.tint = 0x000000;
@@ -136,8 +137,10 @@ Game.Play.prototype = {
     this.flee_button = this.game.add.button(Game.w - 96, 384, this.makeBox(128,64),function(){
 			if (Math.random() < this.enemy.flee) {
 				this.player.inCombat = false;
+        this.battleInitiated = false;
 				console.log('combat over');
 				this.battleGroup.visible = false;
+        this.player.alpha = 1; 
 			}
 		},this); 
 		this.flee_button.anchor.setTo(0.5);
@@ -149,7 +152,6 @@ Game.Play.prototype = {
 
 		this.battleGroup.visible = false;
     this.battleGroup.fixedToCamera = true;
-
 
     //Create Twitter button as invisible, show during win condition to post highscore
     this.twitterButton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 200,'twitter', this.twitter, this);
@@ -167,17 +169,23 @@ Game.Play.prototype = {
   update: function() {
 
     if (this.player.inCombat) {
-			console.log('FIGHTING'); 
-			this.stats_box.visible = true;
-			this.battleGroup.visible = true;
+			// console.log('FIGHTING'); 
+      if (this.battleInitiated === false) {
+				this.enemy.kill();
+				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0});
+        this.battleInitiated = true;
+        this.stats_box.visible = true;
+        this.battleGroup.visible = true;
+        this.player.alpha = 0;
+      }
 
 			if (this.enemy.health <= 0) {
 				this.player.inCombat = false;
 				console.log('combat over');
 
-				this.enemy.kill();
-				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0});
 				this.battleGroup.visible = false;
+        this.battleInitiated = false;
+        this.player.alpha = 1;
 			}
 			if (this.player.health === 0) {
 				this.enemy.kill();
@@ -186,14 +194,16 @@ Game.Play.prototype = {
 				this.player.kill();
 				this.player.reset(5, 7);
 				this.health_text.setText('Health: '+this.player.health);
+        this.battleInitiated = false;
+        this.player.alpha = 1;
 			}
 
 			//Begin Combat
-			if (this.turn === this.enemy) {
+			if (this.turn === this.enemy && this.game.time.now > this.combatWait) {
 				this.turn = this.player;
 				this.player.health -= this.enemy.power;
 				this.health_text.setText('Health: '+this.player.health);
-			}	
+			}
 
     }else {
       // Check For an Encounter
