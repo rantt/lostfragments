@@ -89,16 +89,111 @@ Game.Play.prototype = {
     this.stats_box.add(this.gold_text);
 
 
+		this.turn = this.player;
+
+		this.battleGroup = this.game.add.group();
+
+    this.battleGround = this.game.add.sprite(Game.w/2+18, Game.h/2, 'bg1');
+    // this.battleGround.fixedToCamera = true;
+    this.battleGround.anchor.setTo(0.5);
+    // this.battleGround.visible = false;
+		this.battleGroup.add(this.battleGround);
+    // this.battleGround.visible = false;
+
+
+		this.enemy = new Enemy(this.game, {'sheet': 'slime', 'health': 4, 'power': 2,'flee': 1});
+
+		this.battleGroup.add(this.enemy);
+    this.attack_button = this.game.add.button(Game.w - 96, 192, this.makeBox(128,64),function(){
+			console.log('clicked attack');
+			if (this.player.inCombat && this.turn == this.player) {
+				this.enemy.health -= this.player.level;
+  			this.game.add.tween(this.enemy).to({tint: 0xff0000},100).to({tint: 0xffffff},100).start();
+				this.turn = this.enemy;
+			}
+
+		},this); 
+		this.attack_button.anchor.setTo(0.5);
+		this.attack_button.tint = 0x000000;
+    this.attack_text = this.game.add.bitmapText(Game.w -96, 200, 'minecraftia', 'Attack', 28); 
+		this.attack_text.anchor.setTo(0.5);
+		this.battleGroup.add(this.attack_button);
+		this.battleGroup.add(this.attack_text);
+
+    this.potion_button = this.game.add.button(Game.w - 96, 288, this.makeBox(128,64),function(){
+			// this.player.health += 4;
+			this.player.takePotion(4);
+			// this.health_text.setTo(this.player.takePotion(4));
+			this.turn = this.enemy;
+			},this); 
+		this.potion_button.anchor.setTo(0.5);
+		this.potion_button.tint = 0x000000;
+    this.potion_text = this.game.add.bitmapText(Game.w -96, 296, 'minecraftia', 'Potion', 28); 
+		this.potion_text.anchor.setTo(0.5);
+		this.battleGroup.add(this.potion_button);
+		this.battleGroup.add(this.potion_text);
+
+    this.flee_button = this.game.add.button(Game.w - 96, 384, this.makeBox(128,64),function(){
+			if (Math.random() < this.enemy.flee) {
+				this.player.inCombat = false;
+				console.log('combat over');
+				this.battleGroup.visible = false;
+			}
+		},this); 
+		this.flee_button.anchor.setTo(0.5);
+		this.flee_button.tint = 0x000000;
+    this.flee_text = this.game.add.bitmapText(Game.w -96, 392, 'minecraftia', 'Flee', 28); 
+		this.flee_text.anchor.setTo(0.5);
+		this.battleGroup.add(this.flee_button);
+		this.battleGroup.add(this.flee_text);
+
+		this.battleGroup.visible = false;
+    this.battleGroup.fixedToCamera = true;
+
 
     //Create Twitter button as invisible, show during win condition to post highscore
     this.twitterButton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 200,'twitter', this.twitter, this);
     this.twitterButton.anchor.set(0.5);
     this.twitterButton.visible = false;
   },
+	makeBox: function(x,y) {
+		var bmd = this.game.add.bitmapData(x, y);
+		bmd.ctx.beginPath();
+		bmd.ctx.rect(0, 0, x, y);
+		bmd.ctx.fillStyle = '#fff';
+		bmd.ctx.fill();
+		return bmd;
+	},
   update: function() {
 
     if (this.player.inCombat) {
-     console.log('FIGHTING'); 
+			console.log('FIGHTING'); 
+			this.stats_box.visible = true;
+			this.battleGroup.visible = true;
+
+			if (this.enemy.health <= 0) {
+				this.player.inCombat = false;
+				console.log('combat over');
+
+				this.enemy.kill();
+				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0});
+				this.battleGroup.visible = false;
+			}
+			if (this.player.health === 0) {
+				this.enemy.kill();
+				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0});
+				this.battleGroup.visible = false;
+				this.player.kill();
+				this.player.reset(5, 7);
+				this.health_text.setText('Health: '+this.player.health);
+			}
+
+			//Begin Combat
+			if (this.turn === this.enemy) {
+				this.turn = this.player;
+				this.player.health -= this.enemy.power;
+				this.health_text.setText('Health: '+this.player.health);
+			}	
 
     }else {
       // Check For an Encounter

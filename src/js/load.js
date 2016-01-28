@@ -68,6 +68,9 @@ Game.Load.prototype = {
     this.game.load.spritesheet('player','assets/images/hero_x64.png',64,64,12);
     this.game.load.spritesheet('box','assets/images/box_tiles.png',64,64,3);
 
+    this.game.load.image('bg1', 'assets/images/battle_bg1.png');
+    this.game.load.spritesheet('slime', 'assets/images/slime.png',16, 16, 2);
+
     dialogue = new Dialogue(this.game);
     dialogue.preload();
 

@@ -2,8 +2,8 @@ var Player = function(game, tilex, tiley, map) {
   this.game = game;
 
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
-  this.health = 10;
   this.level = 1;
+  this.health = this.maxHealth();
   this.gold = 0;
   this.inCombat = false
   this.isMoving = false;
@@ -22,16 +22,10 @@ var Player = function(game, tilex, tiley, map) {
   // this.anchor.setTo(0.5);
 
   this.game.physics.arcade.enable(this); // set up player physics
-  // this.game.physics.p2.enable(this); // set up player physics
   this.body.fixedRotation = true; // no rotation
   this.body.moves = false;
 
-  // this.body.collideWorldBounds = true;
   this.game.add.existing(this);
-
-  //Create a rectangular hitbox around players body
-  // this.body.clearShapes();
-  // this.body.addRectangle(16,32,0,16);
 
   this.direction = 'down';
   this.animations.add('down', [6, 7], 6, true);
@@ -42,6 +36,45 @@ var Player = function(game, tilex, tiley, map) {
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
+Player.prototype.reset = function(tilex,tiley) {
+  // this.game = game;
+
+  Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
+  this.level = 1;
+  this.health = this.maxHealth();
+  this.gold = 0;
+  this.inCombat = false
+  this.isMoving = false;
+
+  // this.map = map;
+  this.marker = new Phaser.Point(tilex,tiley);
+
+  this.game.physics.arcade.enable(this); // set up player physics
+  this.body.fixedRotation = true; // no rotation
+  this.body.moves = false;
+
+  this.game.add.existing(this);
+
+  this.direction = 'down';
+  this.animations.add('down', [6, 7], 6, true);
+  this.animations.add('up', [8, 9], 6, true);
+  this.animations.add('right', [4, 11], 6, true);
+  this.animations.add('left', [5, 10], 6, true);
+
+};
+Player.prototype.maxHealth = function() {
+	return 8 + this.level * 2;
+},
+Player.prototype.takePotion = function(hp) {
+	console.log(this.maxHealth());
+	if (this.health + hp > this.maxHealth()) {
+	console.log(this.maxHealth());
+		this.health = this.maxHealth();
+	}else {
+		this.health += hp;
+	}
+	return this.health;
+};
 Player.prototype.update = function() {
   this.movements();
   this.updatecamera();
