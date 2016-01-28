@@ -3,7 +3,7 @@ var Panel = function(game, x, y, width, height, tileSize, spritesheet) {
   // Top Corner, Top Middle and Middle
 
   this.game = game;
-  this.panelGroup = this.game.add.group();
+  Phaser.Group.call(this, this.game);
 
   for(var i = 0; i < height; i++) {
     for(var j = 0; j < width;j++) {
@@ -38,11 +38,10 @@ var Panel = function(game, x, y, width, height, tileSize, spritesheet) {
           panelSprite.frame = 2;
         }
       }
-      this.panelGroup.add(panelSprite);
+      this.add(panelSprite);
     }
   }
-  return this.panelGroup;
 };
 
-
+Panel.prototype = Object.create(Phaser.Group.prototype); 
 Panel.prototype.constrctor = Panel;
