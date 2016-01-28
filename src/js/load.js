@@ -50,8 +50,8 @@ Game.Load = function(game) {
 Game.Load.prototype = {
   preload: function() {
     
-    //Debug Plugin
-    this.game.add.plugin(Phaser.Plugin.Debug);
+    // //Debug Plugin
+    // this.game.add.plugin(Phaser.Plugin.Debug);
 
     //Loading Screen Message/bar
     var loadingText = this.game.add.text(Game.w, Game.h, 'Loading...', { font: '30px Helvetica', fill: '#000' });
@@ -66,6 +66,7 @@ Game.Load.prototype = {
     this.game.load.spritesheet('town','assets/images/town.png',tileSize,tileSize,36);
 
     this.game.load.spritesheet('player','assets/images/hero_x64.png',64,64,12);
+    this.game.load.spritesheet('box','assets/images/box_tiles.png',64,64,3);
 
     dialogue = new Dialogue(this.game);
     dialogue.preload();

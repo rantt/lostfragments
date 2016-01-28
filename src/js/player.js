@@ -2,13 +2,16 @@ var Player = function(game, tilex, tiley, map) {
   this.game = game;
 
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
+  this.health = 10;
+  this.level = 1;
+  this.gold = 0;
   
   this.cursor = this.game.input.keyboard.createCursorKeys();
   this.isMoving = false;
 
   // this.moveDelay = 200;
   // this.moveWait = this.game.time.now + this.moveDelay;
-
+//
   this.map = map;
   this.marker = new Phaser.Point(tilex,tiley);
 
@@ -23,9 +26,9 @@ var Player = function(game, tilex, tiley, map) {
   this.game.physics.arcade.enable(this); // set up player physics
   // this.game.physics.p2.enable(this); // set up player physics
   this.body.fixedRotation = true; // no rotation
-  // this.body.moves = false;
+  this.body.moves = false;
 
-  this.body.collideWorldBounds = true;
+  // this.body.collideWorldBounds = true;
   this.game.add.existing(this);
 
   //Create a rectangular hitbox around players body
