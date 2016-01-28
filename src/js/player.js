@@ -5,15 +5,13 @@ var Player = function(game, tilex, tiley, map) {
   this.health = 10;
   this.level = 1;
   this.gold = 0;
-  
-  this.cursor = this.game.input.keyboard.createCursorKeys();
+  this.inCombat = false
   this.isMoving = false;
 
-  // this.moveDelay = 200;
-  // this.moveWait = this.game.time.now + this.moveDelay;
-//
   this.map = map;
   this.marker = new Phaser.Point(tilex,tiley);
+
+  this.cursor = this.game.input.keyboard.createCursorKeys();
 
   //Setup WASD and extra keys
   wKey = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -91,14 +89,9 @@ Player.prototype.movements = function() {
 };
 Player.prototype.moveTo = function(x,y) {
   if (this.isMoving || this.cantMove(x, y)) {return;}
-  // if (this.isMoving || this.cantMove(x, y) || this.moveWait > this.game.time.now) {return;}
   this.isMoving = true;
 
-  // this.moveWait = this.game.time.now + this.moveDelay;
-  // this.x = this.x + x*64;
-  // this.y = this.y + y*64;
-
-  this.game.add.tween(this).to({x: this.x + x*64, y: this.y + y*64}, 80, Phaser.Easing.Linear.None, true).onComplete.add(function() {
+  this.game.add.tween(this).to({x: this.x + x*64, y: this.y + y*64}, 120, Phaser.Easing.Linear.None, true).onComplete.add(function() {
       this.marker.x += x;
       this.marker.y += y;
       this.isMoving = false;
@@ -133,7 +126,7 @@ Player.prototype.updatecamera = function() {
     }
     this.tweening = true;
     
-    var speed = 300;
+    var speed = 700;
     var toMove = false;
 
     if (this.y > this.game.camera.y + Game.h - 64) {

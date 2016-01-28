@@ -97,32 +97,38 @@ Game.Play.prototype = {
   },
   update: function() {
 
-    // Check For an Encounter
-    if (this.player.marker.x !== this.lastPosition.x || this.player.marker.y !== this.lastPosition.y) {
-      this.lastPosition.x = this.player.marker.x;
-      this.lastPosition.y = this.player.marker.y;
+    if (this.player.inCombat) {
+      
 
-      var encounter = parseFloat(this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]);
-      var random = Math.random();
-
-      // console.log(random + ' < ' + encounter);
-
-      if (encounter < random) {
-        // console.log('Out Combat');
-      }else {
-        // console.log('In Combat');
-      }
-    }
-
-    // Show Stats Menu when player is standing still
-    if (this.player.isMoving) {
-      this.movementTimer = this.game.time.now + 1000;
-      this.stats_box.visible = false;
     }else {
-      if (this.game.time.now > this.movementTimer) {
-        this.stats_box.visible = true;
+      // Check For an Encounter
+      if (this.player.marker.x !== this.lastPosition.x || this.player.marker.y !== this.lastPosition.y) {
+        this.lastPosition.x = this.player.marker.x;
+        this.lastPosition.y = this.player.marker.y;
+
+        var encounter = parseFloat(this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]);
+        var random = Math.random();
+
+        // console.log(random + ' < ' + encounter);
+
+        if (encounter < random) {
+          // console.log('Out Combat');
+        }else {
+          // console.log('In Combat');
+        }
+      }
+
+      // Show Stats Menu when player is standing still
+      if (this.player.isMoving) {
+        this.movementTimer = this.game.time.now + 1000;
+        this.stats_box.visible = false;
+      }else {
+        if (this.game.time.now > this.movementTimer) {
+          this.stats_box.visible = true;
+        }
       }
     }
+
 
     // // Toggle Music
     // muteKey.onDown.add(this.toggleMute, this);
