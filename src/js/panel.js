@@ -7,7 +7,7 @@ var Panel = function(game, x, y, width, height, tileSize, spritesheet) {
 
   for(var i = 0; i < height; i++) {
     for(var j = 0; j < width;j++) {
-      var panelSprite = this.game.add.sprite(x + tileSize*j, y + tileSize*i, spritesheet, 0)
+      var panelSprite = this.game.add.sprite(x + tileSize*j, y + tileSize*i, spritesheet, 0);
       panelSprite.anchor.setTo(0.5);
       panelSprite.fixedToCamera = true;
       if (i === 0) {

@@ -2,10 +2,10 @@ var Player = function(game, tilex, tiley, map) {
   this.game = game;
 
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
-  this.level = 3;
+  this.level = 1;
   this.health = this.maxHealth();
   this.gold = 0;
-  this.inCombat = false
+  this.inCombat = false;
   this.isMoving = false;
 
   this.map = map;
@@ -43,7 +43,7 @@ Player.prototype.reset = function(tilex,tiley) {
   // this.level = 1;
   this.health = this.maxHealth();
   this.gold = 0;
-  this.inCombat = false
+  this.inCombat = false;
   this.isMoving = false;
 
   this.marker = new Phaser.Point(tilex,tiley);
@@ -63,7 +63,6 @@ Player.prototype.reset = function(tilex,tiley) {
 };
 Player.prototype.loadStats = function() {
     ////// STATS BOX //////
-    //new Panel(game, x, y, width, height, tileSize, spritesheet)
     this.stats_box = new Panel(this.game, 50, 100, 3, 4, 64, 'box');
 
     this.level_text = this.game.add.bitmapText(40, 100, 'minecraftia', 'Level: '+this.level, 24); 
@@ -113,22 +112,22 @@ Player.prototype.update = function() {
 Player.prototype.movements = function() {
 
     if (!this.tweening) {
-      if ((dialogue.hidden) && (this.cursor.left.isDown || aKey.isDown)) {
+      if ( (this.cursor.left.isDown || aKey.isDown)) {
         this.moveTo(-1,0);
         this.direction = 'left';
         this.animations.play('left');
       }
-      else if ((dialogue.hidden) && (this.cursor.right.isDown || dKey.isDown)) {
+      else if ( (this.cursor.right.isDown || dKey.isDown)) {
         this.moveTo(1,0);
         this.direction = 'right';
         this.animations.play('right');
       }
-      else if ((dialogue.hidden) && (this.cursor.up.isDown || wKey.isDown)) {
+      else if ( (this.cursor.up.isDown || wKey.isDown)) {
         this.moveTo(0,-1);
         this.direction = 'up';
         this.animations.play('up');
       }
-      else if ((dialogue.hidden) && (this.cursor.down.isDown || sKey.isDown)) {
+      else if ( (this.cursor.down.isDown || sKey.isDown)) {
         this.moveTo(0,1);
         this.direction = 'down';
         this.animations.play('down');

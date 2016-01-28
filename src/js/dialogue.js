@@ -11,29 +11,28 @@ var Dialogue = function(game) {
   this.line = '';
   this.text = '';
   this.typing = false;
-  this.speaker = null; //the sprite/npc currently speaking
+
+  this.sprite = this.game.add.sprite(0,11*64,'textbox'); 
+  this.sprite.alpha = 0;
+  this.text = this.game.add.bitmapText(30, 7*64+30, 'minecraftia', '', 30);
+
 };
 
 Dialogue.prototype = {
 
-  preload: function() {
-    this.game.load.image('textbox','assets/images/textbox.png',tileSize,tileSize);
-  },
-
-  create: function() {
-    this.sprite = this.game.add.sprite(0,11*64,'textbox'); 
-    this.sprite.alpha = 0;
-    this.text = this.game.add.bitmapText(30, 7*64+30, 'minecraftia', '', 30);
-  },
-
-  show: function(speaker, content) {
+  show: function(content) {
     if (this.typing) {
      return;
     }
-    this.speaker = speaker;
-    this.content = content;
+
+
+    // this.index = 0;
+    // this.line = '';
+    // this.text.setText('');
+
+    // this.content = content;
+    this.content = content.split('*');
     this.typing = true; 
-    this.hidden = false;
 
     /* Position sprite below the current screen and make it visible */
     this.sprite.x = Game.camera.x*Game.w;
@@ -42,15 +41,22 @@ Dialogue.prototype = {
     this.text.x = Game.camera.x*Game.w+30;
     this.text.y = Game.camera.y*Game.h+7*64+30;
  
-    this.sprite.alpha = 100;
+    this.sprite.alpha = 1;
 
 
     /* Slide Up the Dialogue Panel */
-    var t = this.game.add.tween(this.sprite).to({x: Game.camera.x*Game.w, y: Game.camera.y*Game.h+7*64}, 250);
-    t.start();
-    t.onComplete.add(function() {
-      this.nextLine();
-    }, this);
+    if (this.hidden === true) {
+      console.log('in here');
+      var t = this.game.add.tween(this.sprite).to({x: Game.camera.x*Game.w, y: Game.camera.y*Game.h+7*64}, 250);
+      t.start();
+      t.onComplete.add(function() {
+        this.text.setText('');
+        this.line = '';
+        this.index = 0;
+        this.hidden = false;
+        this.nextLine();
+      }, this);
+    }
   },
 
   hide: function() {
@@ -81,7 +87,6 @@ Dialogue.prototype = {
         this.game.time.events.repeat(80, this.content[this.index].length + 1, this.updateLine, this);
     }else {
       this.typing = false;
-      this.speaker = null;
       this.text.setText(this.line+' *');
     }
   },
@@ -91,6 +96,7 @@ Dialogue.prototype = {
       if (this.line.length < this.content[this.index].length)
       {
           this.line = this.content[this.index].substr(0, this.line.length + 1);
+          console.log('line'+this.line);
           this.text.setText(this.line);
       }
       else

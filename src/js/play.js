@@ -31,9 +31,7 @@ Game.Play.prototype = {
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.randomEncounters = {'x0_y0':0,'x1_y0':0.1};
-
-    // this.movementTimer = 0;
+    this.randomEncounters = {'x0_y0':1,'x1_y0':0.1};
 
     this.danger = false;
     this.marker = new Phaser.Point();
@@ -71,6 +69,9 @@ Game.Play.prototype = {
     dKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
     // muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
+    this.battleLogPanel = new Panel(this.game, 150, 500, 9, 2, 64, 'box');
+    this.battleLog = this.game.add.bitmapText(150, 500, 'minecraftia', '', 24);
+    this.battleLog.fixedToCamera = true;
 
 
     this.player.loadStats();
@@ -95,6 +96,9 @@ Game.Play.prototype = {
   			this.game.add.tween(this.enemy).to({tint: 0xff0000},100).to({tint: 0xffffff},100).start();
 				this.turn = this.enemy;
         this.combatWait = this.game.time.now + 1000;
+        console.log('player hit enemy for '+ this.player.level);
+        this.battleLog.setText('player hit enemy for '+ this.player.level);
+        // dialogue.show('player hit enemy for '+ this.player.level);
 			}
 
 		},this); 
@@ -135,8 +139,15 @@ Game.Play.prototype = {
 		this.battleGroup.add(this.flee_button);
 		this.battleGroup.add(this.flee_text);
 
+    // this.combatPanel = new Panel(this.game, 210, Game.h - 175, 7, 3, 64, 'box');
+    // this.combatText = this.game.add.bitmapText(200, 460, 'minecraftia', '', 24);
+    // this.combatPanel.visible = false;
+    // this.combatText.fixedToCamera = true;
+    //
 		this.battleGroup.visible = false;
     this.battleGroup.fixedToCamera = true;
+
+    // dialogue = new Dialogue(this.game);
 
     //Create Twitter button as invisible, show during win condition to post highscore
     this.twitterButton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 200,'twitter', this.twitter, this);
@@ -158,42 +169,47 @@ Game.Play.prototype = {
       if (this.battleInitiated === false) {
 				this.enemy.kill();
 				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 2});
+
         console.log('el'+this.enemy.level);
         this.battleInitiated = true;
         this.player.stats_box.visible = true;
         this.battleGroup.visible = true;
         this.player.alpha = 0;
+        this.battleLog.setText('Enemy Approaches');
       }
 
 			if (this.enemy.health <= 0) {
 				this.player.inCombat = false;
-				console.log('combat over');
 				this.battleGroup.visible = false;
         this.battleInitiated = false;
         this.player.alpha = 1;
+        this.battleLog.setText('Combat Ended\nYou receive: ');
 			}
 			if (this.player.health === 0) {
-				// this.enemy.kill();
-				// this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level':1});
 				this.battleGroup.visible = false;
 				this.player.kill();
 				this.player.reset(5, 7);
         this.player.refreshStats();
         this.player.alpha = 1;
         this.battleInitiated = false;
+        this.battleLog.setText('You Died\n How Sad For You :{');
 			}
 
 			//Begin Combat
 			if (this.turn === this.enemy && this.game.time.now > this.combatWait) {
 				this.turn = this.player;
         var hitChance = parseFloat(0.9 + (this.enemy.level - this.player.level)*0.1);
-        console.log('hc'+hitChance);
-        if (Math.random < hitChance) {
-          console.log('player hit');
+        var random = Math.random();
+        console.log(random + ' hc'+hitChance);
+        if (random < hitChance) {
+          
+          this.battleLog.setText('player hit for '+this.enemy.power+' points of dmg');
           this.player.health -= this.enemy.power;
           this.player.refreshStats();
         }else {
-          console.log('player missed');
+          this.battleLog.setText('enemy attack missed.');
+          // dialogue.show('enemy attack missed.');
+          // console.log('enemy attack missed');
         }
         // console.log('plvl'+this.player.level+' elvl'+this.enemy.level);
         // if (this.enemy.level > parseInt(this.player.level)) {
@@ -209,11 +225,11 @@ Game.Play.prototype = {
         this.lastPosition.y = this.player.marker.y;
 
         var encounter = parseFloat(this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]);
-        var random = Math.random();
+        // var random = Math.random();
 
         // console.log(random + ' < ' + encounter);
 
-        if (encounter < random) {
+        if (encounter < Math.random()) {
           // console.log('Out Combat');
         }else {
           this.player.inCombat = true;

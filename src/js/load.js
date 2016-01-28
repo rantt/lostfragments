@@ -71,8 +71,7 @@ Game.Load.prototype = {
     this.game.load.image('bg1', 'assets/images/battle_bg1.png');
     this.game.load.spritesheet('slime', 'assets/images/slime.png',16, 16, 2);
 
-    dialogue = new Dialogue(this.game);
-    dialogue.preload();
+    this.game.load.image('textbox','assets/images/textbox.png',64,64);
 
     // Music Track
     // this.game.load.audio('music','soundtrack.mp3');
