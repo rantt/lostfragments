@@ -32,10 +32,10 @@ Game.Boot.prototype = {
     this.game.load.bitmapFont('minecraftia', 'assets/fonts/font.png', 'assets/fonts/font.xml'); //load default font
 
 
-    // //Scale Image to Fit Window
-    // this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    // this.game.scale.maxHeight = window.innerHeight;
-    // this.game.scale.maxWidth = window.innerHeight*(Game.w/Game.h);
+    //Scale Image to Fit Window
+    this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.scale.maxHeight = window.innerHeight;
+    this.game.scale.maxWidth = window.innerHeight*(Game.w/Game.h);
 
   },
   create: function() {
@@ -52,6 +52,9 @@ Game.Load.prototype = {
     
     // //Debug Plugin
     // this.game.add.plugin(Phaser.Plugin.Debug);
+
+    var screenShake = this.game.plugins.add(Phaser.Plugin.ScreenShake);
+    this.game.plugins.ScreenShake = screenShake;
 
     //Loading Screen Message/bar
     var loadingText = this.game.add.text(Game.w, Game.h, 'Loading...', { font: '30px Helvetica', fill: '#000' });
@@ -70,8 +73,11 @@ Game.Load.prototype = {
     this.game.load.spritesheet('player','assets/images/hero_x64.png',64,64,12);
     this.game.load.spritesheet('box','assets/images/box_tiles.png',64,64,3);
 
-    this.game.load.image('bg1', 'assets/images/battle_bg1.png');
-    this.game.load.spritesheet('slime', 'assets/images/slime.png',16, 16, 2);
+    // this.game.load.image('bg1', 'assets/images/battle_bg1.png');
+    this.game.load.spritesheet('backdrops', 'assets/images/backdrops.png',400,320,3);
+    this.game.load.spritesheet('hearts', 'assets/images/hearts.png',96,72,12);
+
+    this.game.load.image('slime', 'assets/images/slime.png');
 
     this.game.load.image('textbox','assets/images/textbox.png',64,64);
 

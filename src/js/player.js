@@ -4,9 +4,12 @@ var Player = function(game, tilex, tiley, map) {
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
   this.level = 1;
   this.health = this.maxHealth();
-  this.gold = 0;
+  this.hearts = 0;
+  this.potion = 2;
   this.inCombat = false;
   this.isMoving = false;
+  this.nextLevel = 100;
+  this.exp = 0;
 
   this.map = map;
   this.marker = new Phaser.Point(tilex,tiley);
@@ -27,7 +30,6 @@ var Player = function(game, tilex, tiley, map) {
 
   this.game.add.existing(this);
 
-
   this.direction = 'down';
   this.animations.add('down', [6, 7], 6, true);
   this.animations.add('up', [8, 9], 6, true);
@@ -42,7 +44,7 @@ Player.prototype.reset = function(tilex,tiley) {
   Phaser.Sprite.call(this, game, tilex*tileSize, tiley*tileSize, 'player');
   // this.level = 1;
   this.health = this.maxHealth();
-  this.gold = 0;
+  this.potion = 0;
   this.inCombat = false;
   this.isMoving = false;
 
@@ -65,30 +67,52 @@ Player.prototype.loadStats = function() {
     ////// STATS BOX //////
     this.stats_box = new Panel(this.game, 50, 100, 3, 4, 64, 'box');
 
-    this.level_text = this.game.add.bitmapText(40, 100, 'minecraftia', 'Level: '+this.level, 24); 
+    this.level_text = this.game.add.bitmapText(40, 100, 'minecraftia', 'Level: '+this.level, 20); 
     this.level_text.fixedToCamera = true;
     this.stats_box.add(this.level_text);
     
-    this.health_text = this.game.add.bitmapText(40, 136, 'minecraftia', 'Health: '+this.health, 24); 
+    this.health_text = this.game.add.bitmapText(40, 136, 'minecraftia', 'Health: '+this.health, 20); 
     this.health_text.fixedToCamera = true;
     this.stats_box.add(this.health_text);
     
-    this.gold_text = this.game.add.bitmapText(40, 172, 'minecraftia', 'Gold: '+this.gold, 24); 
-    this.gold_text.fixedToCamera = true;
-    this.stats_box.add(this.gold_text);
+    this.potion_text = this.game.add.bitmapText(40, 172, 'minecraftia', 'Potions: '+this.potion, 20); 
+    this.potion_text.fixedToCamera = true;
+    this.stats_box.add(this.potion_text);
+
+    this.heart_text = this.game.add.bitmapText(40, 208, 'minecraftia', 'Heart:'+this.hearts+'/3', 20); 
+    this.heart_text.fixedToCamera = true;
+
+    this.stats_box.add(this.heart_text);
+
+    this.exp_text = this.game.add.bitmapText(40, 246, 'minecraftia', 'Exp:'+this.exp+'/'+this.nextLevel, 20); 
+    this.exp_text.fixedToCamera = true;
+
+    this.stats_box.add(this.exp_text);
+
 };
 Player.prototype.refreshStats = function() {
   this.level_text.setText('Level: '+this.level);
   this.health_text.setText('Health: '+this.health);
-  this.gold_text.setText('Gold: '+this.gold);
+  this.potion_text.setText('Potions: '+this.potion);
+  this.heart_text.setText('Heart:'+this.hearts+'/3');
+  this.exp_text.setText('Exp:'+this.exp+'/'+this.nextLevel);
 };
 Player.prototype.maxHealth = function() {
 	return 8 + this.level * 2;
 };
+Player.prototype.addExp = function(exp) {
+  this.exp += exp;
+  if (this.exp >= this.nextLevel) {
+    this.exp = this.exp - this.nextLevel;
+    this.level++;
+    this.nextLevel = this.level*100; 
+  }
+};
 Player.prototype.takePotion = function(hp) {
-	console.log(this.maxHealth());
+  if (this.potions <= 0) {return;}
+
+  this.potion--;
 	if (this.health + hp > this.maxHealth()) {
-	console.log(this.maxHealth());
 		this.health = this.maxHealth();
 	}else {
 		this.health += hp;
@@ -98,7 +122,7 @@ Player.prototype.takePotion = function(hp) {
 Player.prototype.update = function() {
   // Show Stats Menu when player is standing still
   if (this.isMoving) {
-    this.movementTimer = this.game.time.now + 1000;
+    this.movementTimer = this.game.time.now + 2000;
     this.stats_box.visible = false;
   }else {
     if (this.game.time.now > this.movementTimer) {

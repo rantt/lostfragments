@@ -5,10 +5,10 @@
  * Using Math.round() will give you a non-uniform distribution!
  */
 
-// // Choose Random integer in a range
-// function rand (min, max) {
-//     return Math.floor(Math.random() * (max - min + 1)) + min;
-// }
+// Choose Random integer in a range
+function rand (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 // var musicOn = true;
 
@@ -31,9 +31,7 @@ Game.Play.prototype = {
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    // this.randomEncounters = {'x0_y0':0,'x1_y0':0.1};
-    this.randomEncounters = {'x0_y0':0,'x1_y0':0.0};
-
+    this.randomEncounters = {'x0_y0':0,'x1_y0':0,'x2_y0':0.1};
     this.danger = false;
     this.marker = new Phaser.Point();
     this.directions = {};
@@ -41,11 +39,33 @@ Game.Play.prototype = {
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.map = this.game.add.tilemap('level1');
     this.map.addTilesetImage('tiles');
+
     this.layer1 = this.map.createLayer('layer1');
-    this.layer1.resizeWorld();
     this.layer2 = this.map.createLayer('layer2');
+    this.map.setCollision([1,7,8,9,10,11]);
+    this.map.setCollision([1,7,8,9,10,11,14,15,16,17],true,'layer2');
+
+
+    this.layer1.resizeWorld();
     this.layer2.resizeWorld();
 
+    // this.map.createFromObjects('objects', 28, 'tiles', 10, true, false, this.hearts);
+    // this.map.createFromObjects('objects', 30, 'tiles', 12, true, false, this.hearts);
+
+    this.hearts = this.game.add.group();
+    // this.hearts.enableBody = true;
+
+    this.map.createFromObjects('objects', 28, 'hearts', 9, true, false, this.hearts);
+    this.map.createFromObjects('objects', 19, 'hearts', 0, true, false, this.hearts);
+    this.map.createFromObjects('objects', 30, 'hearts', 11, true, false, this.hearts);
+
+    this.hearts.forEach(function(h) {
+      console.log(h);
+      // h.anchor.setTo(0.5);
+      h.y += h.height/2;
+      var t = this.game.add.tween(h).to({y: '-5'}, 500).to({y: '5'},500);
+      t.loop(true).start()
+    },this);
     // // Gray Brick
     // this.map.setCollision([13,14,15]);
     //
@@ -83,7 +103,7 @@ Game.Play.prototype = {
 
 		this.battleGroup = this.game.add.group();
 
-    this.battleGround = this.game.add.sprite(Game.w/2+18, Game.h/2, 'bg1');
+    this.battleGround = this.game.add.sprite(Game.w/2+18, Game.h/2, 'backdrops',0);
     this.battleGround.anchor.setTo(0.5);
 		this.battleGroup.add(this.battleGround);
 
@@ -102,8 +122,8 @@ Game.Play.prototype = {
         this.battleLog.setText('player hit enemy for '+ this.player.level);
         // dialogue.show('player hit enemy for '+ this.player.level);
 			}
-
 		},this); 
+
 		this.attack_button.anchor.setTo(0.5);
 		this.attack_button.tint = 0x000000;
     this.attack_text = this.game.add.bitmapText(Game.w -96, 200, 'minecraftia', 'Attack', 28); 
@@ -158,9 +178,26 @@ Game.Play.prototype = {
 	},
   update: function() {
 
+    this.hearts.forEach(function(heart) {
+      if (checkOverlap(this.player, heart)) {
+        heart.destroy(); 
+        this.player.hearts++;
+        this.player.loadStats();
+      }
+    },this);
+
+
+    function checkOverlap(spriteA, spriteB) {
+      var boundsA = spriteA.getBounds();
+      var boundsB = spriteB.getBounds();
+      return Phaser.Rectangle.intersects(boundsA, boundsB);
+    }
+
     if (this.player.inCombat) {
       if (this.battleInitiated === false) {
-				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 2});
+
+
+				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 2,'exp':20,'potions':rand(0,1)});
 
         this.battleLogPanel.visible = true;
         this.battleInitiated = true;
@@ -176,7 +213,17 @@ Game.Play.prototype = {
 				this.battleGroup.visible = false;
         this.battleInitiated = false;
         this.player.alpha = 1;
-        this.battleLog.setText('Combat Ended\nYou receive: ');
+        var msg = 'Combat Ended\nYou receive: '; 
+        if (this.enemy.potions > 0) {
+          msg += this.enemy.potions + ' potions. '
+          this.player.potion += this.enemy.potions;
+        }
+        msg += this.enemy.exp + ' exp.'
+        this.player.addExp(this.enemy.exp);
+        this.player.refreshStats();
+
+        this.battleLog.setText(msg);
+
         this.turn = this.player;
 			}
 			if (this.player.health === 0) {
@@ -196,7 +243,7 @@ Game.Play.prototype = {
         var random = Math.random();
         console.log(random + ' hc'+hitChance);
         if (random < hitChance) {
-          
+          // this.game.plugins.ScreenShake.start(7);
           this.battleLog.setText('player hit for '+this.enemy.power+' points of dmg');
           this.player.health -= this.enemy.power;
           this.player.refreshStats();
@@ -244,11 +291,14 @@ Game.Play.prototype = {
   //     this.music.volume = 0.5;
   //   }
   // },
-  // render: function() {
+  render: function() {
+    this.hearts.forEach(function(heart) {
+      this.game.debug.body(heart); 
+    },this);
   //   this.game.debug.text('Camera: ' + JSON.stringify(Game.camera), 32, 96);
   //   this.game.debug.text('Danger: ' + this.danger, 32, 114);
     // this.game.debug.text('this.marker.x:' + this.marker.x + 'this.marker.y:'+this.marker.y, 32, 146);
     // this.game.debug.text('encounter% '+ (this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]), 32, 164);
-  // }
+  }
 
 };
