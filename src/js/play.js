@@ -31,31 +31,32 @@ Game.Play.prototype = {
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.randomEncounters = {'x0_y0':0,'x1_y0':0.1};
+    // this.randomEncounters = {'x0_y0':0,'x1_y0':0.1};
+    this.randomEncounters = {'x0_y0':0,'x1_y0':0.0};
 
     this.danger = false;
     this.marker = new Phaser.Point();
     this.directions = {};
 
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
-    this.map = this.game.add.tilemap('test');
-    this.map.addTilesetImage('town');
+    this.map = this.game.add.tilemap('level1');
+    this.map.addTilesetImage('tiles');
     this.layer1 = this.map.createLayer('layer1');
     this.layer1.resizeWorld();
     this.layer2 = this.map.createLayer('layer2');
     this.layer2.resizeWorld();
 
-    // Gray Brick
-    this.map.setCollision([13,14,15]);
-
-    // Trees
-    this.map.setCollision([16,17,18],true,'layer2');
+    // // Gray Brick
+    // this.map.setCollision([13,14,15]);
+    //
+    // // Trees
+    // this.map.setCollision([16,17,18],true,'layer2');
 
     // this.physics.p2.convertTilemap(this.map, this.layer1);
     // this.physics.p2.convertTilemap(this.map, this.layer2);
 
-    this.player = new Player(this.game, 5,5, this.map);
-    this.lastPosition = new Phaser.Point(5, 5);
+    this.player = new Player(this.game, 5,4, this.map);
+    this.lastPosition = new Phaser.Point(5, 4);
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -158,11 +159,9 @@ Game.Play.prototype = {
   update: function() {
 
     if (this.player.inCombat) {
-			// console.log('FIGHTING'); 
       if (this.battleInitiated === false) {
 				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 2});
 
-        // console.log('el'+this.enemy.level);
         this.battleLogPanel.visible = true;
         this.battleInitiated = true;
         this.player.stats_box.visible = true;
@@ -203,38 +202,23 @@ Game.Play.prototype = {
           this.player.refreshStats();
         }else {
           this.battleLog.setText('enemy attack missed.');
-          // dialogue.show('enemy attack missed.');
-          // console.log('enemy attack missed');
         }
-        // console.log('plvl'+this.player.level+' elvl'+this.enemy.level);
-        // if (this.enemy.level > parseInt(this.player.level)) {
-        //   hitChance += Math.abs(this.enemy.
-        // }
-
 			}
 
     }else {
       // Check For an Encounter
       if (this.player.marker.x !== this.lastPosition.x || this.player.marker.y !== this.lastPosition.y) {
-        // this.battleGroup.visible = false;
         this.battleLogPanel.visible = false;
         this.battleLog.setText('');
         this.lastPosition.x = this.player.marker.x;
         this.lastPosition.y = this.player.marker.y;
 
         var encounter = parseFloat(this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]);
-        // var random = Math.random();
 
-        // console.log(random + ' < ' + encounter);
-
-        if (encounter < Math.random()) {
-          // console.log('Out Combat');
-        }else {
+        if (encounter > Math.random()) {
           this.player.inCombat = true;
-          // console.log('In Combat');
         }
       }
-
     }
 
 
