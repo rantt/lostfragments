@@ -5,7 +5,7 @@ var Player = function(game, tilex, tiley, map) {
   this.level = 1;
   this.health = this.maxHealth();
   this.hearts = 0;
-  this.potion = 2;
+  this.potion = 3;
   this.inCombat = false;
   this.isMoving = false;
   this.nextLevel = 100;
@@ -108,8 +108,9 @@ Player.prototype.addExp = function(exp) {
     this.nextLevel = this.level*100; 
   }
 };
-Player.prototype.takePotion = function(hp) {
+Player.prototype.takePotion = function() {
   if (this.potions <= 0) {return;}
+  var hp = Math.ceil(this.maxHealth()/3);
 
   this.potion--;
 	if (this.health + hp > this.maxHealth()) {

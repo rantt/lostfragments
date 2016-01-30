@@ -2,6 +2,9 @@ var Panel = function(game, x, y, width, height, tileSize, spritesheet) {
   // Expects a sprite sheet of 3 images in the following order
   // Top Corner, Top Middle and Middle
 
+  this.initialX = x;
+  this.initialY = y;
+
   this.game = game;
   Phaser.Group.call(this, this.game);
 
@@ -44,4 +47,40 @@ var Panel = function(game, x, y, width, height, tileSize, spritesheet) {
 };
 
 Panel.prototype = Object.create(Phaser.Group.prototype); 
+// Panel.prototype.show = function() {
+//   this.game.add.tween(this).to({alpha: 1},500,'Linear',true);
+// };
+// Panel.prototype.hide = function() {
+//   this.game.add.tween(this).to({alpha: 0},500,'Linear',true);
+// };
+// Panel.prototype.text = function(text,size,font) {
+//   this.font = font || 'minecraftia'; 
+//   this.size = size || 24;
+//
+//   var line_limit = this.width/(this.size-4);//Adjust for pt to px
+//
+//   var words = text.split(' ');
+//   var msg = '';
+//   var counter = line_limit;
+//   for(var i=0;i < words.length;i++) {
+//     console.log(counter - words[i].length);
+//     if ((counter - words[i].length) <= 0){
+//       counter = line_limit;
+//       msg += '\n';
+//     }
+//     counter -= words[i].length;
+//     msg += ' '+words[i]; 
+//   }
+//   this.add(this.game.add.bitmapText(this.initialX, this.initialY, 'minecraftia',msg , this.size));
+//   console.log(this.children.indexOf(Phaser.Bitmaptext));
+//   console.log(this);
+//
+//   // if (this.message.text === undefined) {
+//   //   this.message = this.game.add.bitmapText(this.initialX, this.initialY, 'minecraftia',msg , this.size); 
+//   //   this.message.fixedToCamera = true;
+//   // }else {
+//   //   this.message.setTo(msg);
+//   // }
+//    
+// };
 Panel.prototype.constrctor = Panel;

@@ -27,7 +27,7 @@
          "name":"objects",
          "objects":[
                 {
-                 "gid":28,
+                 "gid":29,
                  "height":0,
                  "name":"",
                  "properties":
@@ -41,7 +41,7 @@
                  "y":930
                 }, 
                 {
-                 "gid":19,
+                 "gid":20,
                  "height":0,
                  "name":"",
                  "properties":
@@ -55,7 +55,7 @@
                  "y":408
                 }, 
                 {
-                 "gid":30,
+                 "gid":31,
                  "height":0,
                  "name":"",
                  "properties":
@@ -69,7 +69,7 @@
                  "y":1854
                 }, 
                 {
-                 "gid":29,
+                 "gid":30,
                  "height":0,
                  "name":"",
                  "properties":
@@ -79,8 +79,64 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":2827,
-                 "y":128
+                 "x":2797,
+                 "y":105
+                }, 
+                {
+                 "gid":19,
+                 "height":0,
+                 "name":"",
+                 "properties":
+                    {
+                     "text":"Collect the three heart shards to win."
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":449,
+                 "y":306
+                }, 
+                {
+                 "gid":19,
+                 "height":0,
+                 "name":"",
+                 "properties":
+                    {
+                     "text":"To desert palace...sounds dangerous (LVL10)"
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2178,
+                 "y":911
+                }, 
+                {
+                 "gid":19,
+                 "height":0,
+                 "name":"",
+                 "properties":
+                    {
+                     "text":"To Pond: Sounds Easy (LVL3)"
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2050,
+                 "y":1152
+                }, 
+                {
+                 "gid":19,
+                 "height":0,
+                 "name":"",
+                 "properties":
+                    {
+                     "text":"To Court Yard: Be Careful (LVL5)"
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1541,
+                 "y":917
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -100,7 +156,7 @@
          "firstgid":1,
          "image":"..\/images\/tiles.png",
          "imageheight":64,
-         "imagewidth":1152,
+         "imagewidth":1216,
          "margin":0,
          "name":"tiles",
          "properties":
@@ -112,7 +168,7 @@
          "tilewidth":64
         }, 
         {
-         "firstgid":19,
+         "firstgid":20,
          "image":"..\/images\/hearts.png",
          "imageheight":72,
          "imagewidth":1152,

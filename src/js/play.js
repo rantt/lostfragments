@@ -25,16 +25,13 @@ Game.Play = function(game) {
 
 Game.Play.prototype = {
   create: function() {
-    // this.game.physics.startSystem(Phaser.Physics.P2JS); // start the physics
-    // this.game.physics.p2.setBoundsToWorld(true, true, true, true, false);
 
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.randomEncounters = {'x0_y0':0,'x1_y0':0,'x2_y0':0.1};
-    this.danger = false;
-    this.marker = new Phaser.Point();
-    this.directions = {};
+    this.randomEncounters = {'x0_y0':0,'x2_y0':0,'x2_y2':0,'x1_y1':0,'x0_y1':0,'x3_y1':0,'x3_y0':0};
+    // this.randomEncounters = {'x0_y0':0,'x2_y0':0.1,'x2_y2':0.1,'x1_y1':0.1,'x0_y1':0.1,'x3_y1':0.1,'x3_y0':0.2};
+    this.posKey = 'x0_y0';
 
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.map = this.game.add.tilemap('level1');
@@ -49,34 +46,27 @@ Game.Play.prototype = {
     this.layer1.resizeWorld();
     this.layer2.resizeWorld();
 
-    // this.map.createFromObjects('objects', 28, 'tiles', 10, true, false, this.hearts);
-    // this.map.createFromObjects('objects', 30, 'tiles', 12, true, false, this.hearts);
 
     this.hearts = this.game.add.group();
-    // this.hearts.enableBody = true;
 
-    this.map.createFromObjects('objects', 28, 'hearts', 9, true, false, this.hearts);
-    this.map.createFromObjects('objects', 19, 'hearts', 0, true, false, this.hearts);
-    this.map.createFromObjects('objects', 30, 'hearts', 11, true, false, this.hearts);
+    this.map.createFromObjects('objects', 29, 'hearts', 9, true, false, this.hearts);//yellow
+    this.map.createFromObjects('objects', 20, 'hearts', 0, true, false, this.hearts);//empty
+    this.map.createFromObjects('objects', 30, 'hearts', 10, true, false, this.hearts);
+    this.map.createFromObjects('objects', 31, 'hearts', 11, true, false, this.hearts);//red
+
+    //Signs
+    this.signs = this.game.add.group();
+    this.map.createFromObjects('objects', 19, 'tiles', 18, true, false, this.signs);//yellow
 
     this.hearts.forEach(function(h) {
-      console.log(h);
-      // h.anchor.setTo(0.5);
       h.y += h.height/2;
       var t = this.game.add.tween(h).to({y: '-5'}, 500).to({y: '5'},500);
-      t.loop(true).start()
+      t.loop(true).start();
     },this);
-    // // Gray Brick
-    // this.map.setCollision([13,14,15]);
-    //
-    // // Trees
-    // this.map.setCollision([16,17,18],true,'layer2');
-
-    // this.physics.p2.convertTilemap(this.map, this.layer1);
-    // this.physics.p2.convertTilemap(this.map, this.layer2);
 
     this.player = new Player(this.game, 5,4, this.map);
     this.lastPosition = new Phaser.Point(5, 4);
+
 
     // // Music
     // this.music = this.game.add.sound('music');
@@ -120,7 +110,6 @@ Game.Play.prototype = {
         this.combatWait = this.game.time.now + 1000;
         console.log('player hit enemy for '+ this.player.level);
         this.battleLog.setText('player hit enemy for '+ this.player.level);
-        // dialogue.show('player hit enemy for '+ this.player.level);
 			}
 		},this); 
 
@@ -132,7 +121,7 @@ Game.Play.prototype = {
 		this.battleGroup.add(this.attack_text);
 
     this.potion_button = this.game.add.button(Game.w - 96, 288, this.makeBox(128,64),function(){
-			this.player.takePotion(4);
+			this.player.takePotion();
       this.player.refreshStats();
 			this.turn = this.enemy;
       this.combatWait = this.game.time.now + 1000;
@@ -163,10 +152,18 @@ Game.Play.prototype = {
 		this.battleGroup.visible = false;
     this.battleGroup.fixedToCamera = true;
 
+    //Initialize Sign 
+    this.sign_text = this.game.add.bitmapText(32, 480,'minecraftia','',24);
+    this.sign_text.fixedToCamera = true;
+    
+
+
     //Create Twitter button as invisible, show during win condition to post highscore
-    this.twitterButton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 200,'twitter', this.twitter, this);
+    this.win_text = this.game.add.bitmapText(Game.w/2, Game.h/2-100,'minecraftia','YOU WIN!',48);
+    this.win_text.anchor.setTo(0.5);
+    this.twitterButton = this.game.add.button(Game.w/2+100, Game.h/2+90,'twitter', this.twitter, this);
     this.twitterButton.anchor.set(0.5);
-    this.twitterButton.visible = false;
+    this.twitterButton.visible = true;
   },
 	makeBox: function(x,y) {
 		var bmd = this.game.add.bitmapData(x, y);
@@ -184,7 +181,21 @@ Game.Play.prototype = {
         this.player.hearts++;
         this.player.loadStats();
       }
+      if (this.player.hearts === 3 && heart.frame === 0) {
+         heart.frame = 1; 
+      }
     },this);
+
+    this.signs.forEach(function(sign) {
+      if (checkOverlap(this.player, sign)) {
+        this.lastRead = this.game.time.now + 500;
+        this.sign_text.setText(sign.text);
+      }
+    },this);
+
+    if (this.game.time.now > this.lastRead) {
+      this.sign_text.setText('');
+    }
 
 
     function checkOverlap(spriteA, spriteB) {
@@ -195,9 +206,52 @@ Game.Play.prototype = {
 
     if (this.player.inCombat) {
       if (this.battleInitiated === false) {
+        
+        var enemy =  {'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 1,'exp':20,'potions':rand(0,1)}; //default enemy
+        
+          console.log('here');
+
+          // if (this.posKey === 'x0_y0') {
+          //   this.battleGround.frame = 2;
+          // }
+        if (this.posKey === 'x2_y0') {
+          this.battleGround.frame = 0;
+        }else if (this.posKey === 'x2_y2') {
+          this.battleGround.frame = 0;
+          enemy.frame = 1;
+          enemy.power = rand(1,3);
+          enemy.level = enemy.power;
+          enemy.exp = (enemy.power - 1)*10 + 10;
+        }else if(this.posKey === 'x1_y1' || this.posKey === 'x0_y1') {
+          this.battleGround.frame = 1;
+          enemy.frame = 2;
+          enemy.health = 8;
+          enemy.power = rand(3,5);
+          enemy.level = enemy.power;
+          enemy.exp = (enemy.power - 1)*10 + 10;
+        }else if (this.posKey === 'x3_y1') {
+          this.battleGround.frame = 2;
+          enemy.health = 12;
+          enemy.frame = 0;
+          enemy.power = 6;
+          enemy.level = enemy.power+2;
+          enemy.frame = rand(0,1);
+          enemy.exp = (enemy.power - 1)*10 + 10;
+          enemy.sheet = 'rat';
+        }else if (this.posKey === 'x3_y0') {
+          this.battleGround.frame = 3;
+          enemy.health = 15;
+          enemy.frame = 3;
+          enemy.flee = 0.5;
+          enemy.power = rand(8,10);
+          enemy.level = enemy.power+2;
+          enemy.frame = rand(0,1);
+          enemy.exp = (enemy.power - 1)*10 + 10;
+          enemy.sheet = 'skeleton';
+        }
 
 
-				this.enemy.reset({'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 2,'exp':20,'potions':rand(0,1)});
+				this.enemy.reset(enemy);
 
         this.battleLogPanel.visible = true;
         this.battleInitiated = true;
@@ -215,10 +269,10 @@ Game.Play.prototype = {
         this.player.alpha = 1;
         var msg = 'Combat Ended\nYou receive: '; 
         if (this.enemy.potions > 0) {
-          msg += this.enemy.potions + ' potions. '
+          msg += this.enemy.potions + ' potions. ';
           this.player.potion += this.enemy.potions;
         }
-        msg += this.enemy.exp + ' exp.'
+        msg += this.enemy.exp + ' exp.';
         this.player.addExp(this.enemy.exp);
         this.player.refreshStats();
 
@@ -245,6 +299,7 @@ Game.Play.prototype = {
         if (random < hitChance) {
           // this.game.plugins.ScreenShake.start(7);
           this.battleLog.setText('player hit for '+this.enemy.power+' points of dmg');
+          // this.player.health -= this.enemy.power + this.enemy.level - 1;
           this.player.health -= this.enemy.power;
           this.player.refreshStats();
         }else {
@@ -255,12 +310,17 @@ Game.Play.prototype = {
     }else {
       // Check For an Encounter
       if (this.player.marker.x !== this.lastPosition.x || this.player.marker.y !== this.lastPosition.y) {
+        console.log('in here');
         this.battleLogPanel.visible = false;
         this.battleLog.setText('');
         this.lastPosition.x = this.player.marker.x;
         this.lastPosition.y = this.player.marker.y;
 
-        var encounter = parseFloat(this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]);
+        this.posKey = 'x'+Game.camera.x+'_y'+Game.camera.y;
+        console.log('posKey'+this.posKey);
+
+        var encounter = parseFloat(this.randomEncounters[this.posKey]);
+        console.log(encounter);
 
         if (encounter > Math.random()) {
           this.player.inCombat = true;
