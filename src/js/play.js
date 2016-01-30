@@ -10,7 +10,7 @@ function rand (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// var musicOn = true;
+var musicOn = true;
 
 
 var wKey;
@@ -29,8 +29,23 @@ Game.Play.prototype = {
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.randomEncounters = {'x0_y0':0,'x2_y0':0,'x2_y2':0,'x1_y1':0,'x0_y1':0,'x3_y1':0,'x3_y0':0};
-    // this.randomEncounters = {'x0_y0':0,'x2_y0':0.1,'x2_y2':0.1,'x1_y1':0.1,'x0_y1':0.1,'x3_y1':0.1,'x3_y0':0.2};
+    // Music
+    this.music = this.game.add.sound('music');
+    this.music.volume = 0.3;
+    this.music.loop = true;
+    this.music.play();
+
+
+    this.attackSnd = this.game.add.sound('attack');
+    this.attackSnd.volume = 0.2;
+    this.hitSnd = this.game.add.sound('hit');
+    this.hitSnd.volume = 0.2;
+    this.potionSnd = this.game.add.sound('potion');
+    this.potionSnd.volume = 0.2;
+
+
+    // this.randomEncounters = {'x0_y0':0,'x2_y0':0,'x2_y2':0,'x1_y1':0,'x0_y1':0,'x3_y1':0,'x3_y0':0};
+    this.randomEncounters = {'x0_y0':0,'x2_y0':0.1,'x2_y2':0.1,'x1_y1':0.1,'x0_y1':0.1,'x3_y1':0.1,'x3_y0':0.2};
     this.posKey = 'x0_y0';
 
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
@@ -64,7 +79,16 @@ Game.Play.prototype = {
       t.loop(true).start();
     },this);
 
+    
+    var lfLvl = parseInt(JSON.parse(localStorage.getItem('atLFLevel')));
+    var lfPots = parseInt(JSON.parse(localStorage.getItem('atLFPotion')));
+    var lfExp = parseInt(JSON.parse(localStorage.getItem('atLFExp')));
+
     this.player = new Player(this.game, 5,4, this.map);
+    this.player.level = lfLvl;
+    this.player.potion = lfPots;
+    this.player.exp = lfExp;
+
     this.lastPosition = new Phaser.Point(5, 4);
 
 
@@ -78,7 +102,7 @@ Game.Play.prototype = {
     aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
     sKey = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
     dKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-    // muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
+    muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
 
     this.player.loadStats();
@@ -102,13 +126,12 @@ Game.Play.prototype = {
 
 		this.battleGroup.add(this.enemy);
     this.attack_button = this.game.add.button(Game.w - 96, 192, this.makeBox(128,64),function(){
-			console.log('clicked attack');
 			if (this.player.inCombat && this.turn == this.player) {
+        this.attackSnd.play();
 				this.enemy.health -= this.player.level;
   			this.game.add.tween(this.enemy).to({tint: 0xff0000},100).to({tint: 0xffffff},100).start();
 				this.turn = this.enemy;
         this.combatWait = this.game.time.now + 1000;
-        console.log('player hit enemy for '+ this.player.level);
         this.battleLog.setText('player hit enemy for '+ this.player.level);
 			}
 		},this); 
@@ -121,6 +144,7 @@ Game.Play.prototype = {
 		this.battleGroup.add(this.attack_text);
 
     this.potion_button = this.game.add.button(Game.w - 96, 288, this.makeBox(128,64),function(){
+      this.potionSnd.play();
 			this.player.takePotion();
       this.player.refreshStats();
 			this.turn = this.enemy;
@@ -137,7 +161,6 @@ Game.Play.prototype = {
 			if (Math.random() < this.enemy.flee) {
 				this.player.inCombat = false;
         this.battleInitiated = false;
-				console.log('combat over');
 				this.battleGroup.visible = false;
         this.player.alpha = 1; 
 			}
@@ -161,9 +184,10 @@ Game.Play.prototype = {
     //Create Twitter button as invisible, show during win condition to post highscore
     this.win_text = this.game.add.bitmapText(Game.w/2, Game.h/2-100,'minecraftia','YOU WIN!',48);
     this.win_text.anchor.setTo(0.5);
+    this.win_text.visible = false;
     this.twitterButton = this.game.add.button(Game.w/2+100, Game.h/2+90,'twitter', this.twitter, this);
     this.twitterButton.anchor.set(0.5);
-    this.twitterButton.visible = true;
+    this.twitterButton.visible = false;
   },
 	makeBox: function(x,y) {
 		var bmd = this.game.add.bitmapData(x, y);
@@ -209,8 +233,6 @@ Game.Play.prototype = {
         
         var enemy =  {'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 1,'exp':20,'potions':rand(0,1)}; //default enemy
         
-          console.log('here');
-
           // if (this.posKey === 'x0_y0') {
           //   this.battleGround.frame = 2;
           // }
@@ -279,8 +301,13 @@ Game.Play.prototype = {
         this.battleLog.setText(msg);
 
         this.turn = this.player;
+
+        //Save Progress
+        localStorage.setItem('atLFLevel', this.player.level);
+        localStorage.setItem('atLFPotion', this.player.potion);
+        localStorage.setItem('atLFExp', this.player.exp);
 			}
-			if (this.player.health === 0) {
+			if (this.player.health <= 0) {
 				this.battleGroup.visible = false;
 				this.player.kill();
 				this.player.reset(5, 7);
@@ -295,9 +322,9 @@ Game.Play.prototype = {
 				this.turn = this.player;
         var hitChance = parseFloat(0.9 + (this.enemy.level - this.player.level)*0.1);
         var random = Math.random();
-        console.log(random + ' hc'+hitChance);
         if (random < hitChance) {
           // this.game.plugins.ScreenShake.start(7);
+          this.hitSnd.play();
           this.battleLog.setText('player hit for '+this.enemy.power+' points of dmg');
           // this.player.health -= this.enemy.power + this.enemy.level - 1;
           this.player.health -= this.enemy.power;
@@ -310,17 +337,14 @@ Game.Play.prototype = {
     }else {
       // Check For an Encounter
       if (this.player.marker.x !== this.lastPosition.x || this.player.marker.y !== this.lastPosition.y) {
-        console.log('in here');
         this.battleLogPanel.visible = false;
         this.battleLog.setText('');
         this.lastPosition.x = this.player.marker.x;
         this.lastPosition.y = this.player.marker.y;
 
         this.posKey = 'x'+Game.camera.x+'_y'+Game.camera.y;
-        console.log('posKey'+this.posKey);
 
         var encounter = parseFloat(this.randomEncounters[this.posKey]);
-        console.log(encounter);
 
         if (encounter > Math.random()) {
           this.player.inCombat = true;
@@ -329,8 +353,8 @@ Game.Play.prototype = {
     }
 
 
-    // // Toggle Music
-    // muteKey.onDown.add(this.toggleMute, this);
+    // Toggle Music
+    muteKey.onDown.add(this.toggleMute, this);
 
   },
   twitter: function() {
@@ -342,15 +366,15 @@ Game.Play.prototype = {
     window.open('http://twitter.com/share?text=My+best+score+is+'+score+'+playing+GAME+TITLE+See+if+you+can+beat+it.+at&via='+twitter_name+'&url='+game_url+'&hashtags='+tags.join(','), '_blank');
   },
 
-  // toggleMute: function() {
-  //   if (musicOn == true) {
-  //     musicOn = false;
-  //     this.music.volume = 0;
-  //   }else {
-  //     musicOn = true;
-  //     this.music.volume = 0.5;
-  //   }
-  // },
+  toggleMute: function() {
+    if (musicOn == true) {
+      musicOn = false;
+      this.music.volume = 0;
+    }else {
+      musicOn = true;
+      this.music.volume = 0.3;
+    }
+  },
   render: function() {
     this.hearts.forEach(function(heart) {
       this.game.debug.body(heart); 

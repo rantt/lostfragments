@@ -10,14 +10,17 @@ var Game = {
   camera: {x:0, y:0}
 };
 
+if (localStorage.getItem('atLFLevel') === null) {
+  localStorage.setItem('atLFLevel', 1);
+}
 
-// var Game = {
-//   w: 800,
-//   h: 600
-// };
+if (localStorage.getItem('atLFPotion') === null) {
+  localStorage.setItem('atLFPotion', 3);
+}
 
-// var w = 800;
-// var h = 600;
+if (localStorage.getItem('atLFExp') === null) {
+  localStorage.setItem('atLFExp', 0);
+}
 
 Game.Boot = function(game) {
   this.game = game;
@@ -87,11 +90,16 @@ Game.Load.prototype = {
 
     this.game.load.image('textbox','assets/images/textbox.png',64,64);
 
-
     spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+
+    //SFX
+    this.game.load.audio('attack','assets/audio/attack.wav');
+    this.game.load.audio('hit','assets/audio/hit.wav');
+    this.game.load.audio('potion','assets/audio/potion.wav');
+
     // Music Track
-    // this.game.load.audio('music','soundtrack.mp3');
+    this.game.load.audio('music',['assets/audio/a_better_world.ogg','assets/audio/a_better_world.mp3']);
 
   },
   create: function() {
