@@ -137,22 +137,22 @@ Player.prototype.update = function() {
 Player.prototype.movements = function() {
 
     if (!this.tweening) {
-      if ( (this.cursor.left.isDown || aKey.isDown)) {
+      if ( (this.cursor.left.isDown || aKey.isDown || leftArrow)) {
         this.moveTo(-1,0);
         this.direction = 'left';
         this.animations.play('left');
       }
-      else if ( (this.cursor.right.isDown || dKey.isDown)) {
+      else if ( (this.cursor.right.isDown || dKey.isDown || rightArrow)) {
         this.moveTo(1,0);
         this.direction = 'right';
         this.animations.play('right');
       }
-      else if ( (this.cursor.up.isDown || wKey.isDown)) {
+      else if ( (this.cursor.up.isDown || wKey.isDown || upArrow)) {
         this.moveTo(0,-1);
         this.direction = 'up';
         this.animations.play('up');
       }
-      else if ( (this.cursor.down.isDown || sKey.isDown)) {
+      else if ( (this.cursor.down.isDown || sKey.isDown || downArrow)) {
         this.moveTo(0,1);
         this.direction = 'down';
         this.animations.play('down');

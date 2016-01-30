@@ -17,6 +17,10 @@ var wKey;
 var aKey;
 var sKey;
 var dKey;
+var leftArrow;
+var rightArrow;
+var upArrow;
+var downArrow;
 var score = 0;
 
 Game.Play = function(game) {
@@ -25,6 +29,7 @@ Game.Play = function(game) {
 
 Game.Play.prototype = {
   create: function() {
+
 
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -83,6 +88,8 @@ Game.Play.prototype = {
     var lfLvl = parseInt(JSON.parse(localStorage.getItem('atLFLevel')));
     var lfPots = parseInt(JSON.parse(localStorage.getItem('atLFPotion')));
     var lfExp = parseInt(JSON.parse(localStorage.getItem('atLFExp')));
+
+    this.loadTouchControls();
 
     this.player = new Player(this.game, 5,4, this.map);
     this.player.level = lfLvl;
@@ -189,6 +196,102 @@ Game.Play.prototype = {
     this.twitterButton.anchor.set(0.5);
     this.twitterButton.visible = false;
   },
+  loadTouchControls: function() {
+
+    //Draw Arrow w/ Bitmap Data
+    var bmdsize = 80;
+    this.arrowbmd = this.game.add.bitmapData(bmdsize,bmdsize);
+    this.arrowbmd.ctx.clearRect(0,0,bmdsize,bmdsize);
+    this.arrowbmd.ctx.strokeStyle = 'white';
+    this.arrowbmd.ctx.lineWidth = 2;
+    this.arrowbmd.ctx.fill();
+    this.arrowbmd.ctx.beginPath();
+    this.arrowbmd.ctx.moveTo(bmdsize*1/2,0);
+    this.arrowbmd.ctx.lineTo(0,bmdsize*1/2);
+    this.arrowbmd.ctx.lineTo(bmdsize*1/4,bmdsize*1/2);
+    this.arrowbmd.ctx.lineTo(bmdsize*1/4,bmdsize);
+    this.arrowbmd.ctx.lineTo(bmdsize*3/4,bmdsize);
+    this.arrowbmd.ctx.lineTo(bmdsize*3/4,bmdsize*1/2);
+    this.arrowbmd.ctx.lineTo(bmdsize,bmdsize*1/2);
+    this.arrowbmd.ctx.fill();
+
+    //Add Touch Controls for mobile
+    //Up Arrow
+    this.upArrow = this.game.add.sprite(140, Game.h - 160, this.arrowbmd);
+    this.upArrow.tint = 0xdcdcdc;
+    this.upArrow.alpha = 0.5;
+    this.upArrow.anchor.setTo(0.5, 0.5);
+    this.upArrow.inputEnabled = true;
+    this.upArrow.fixedToCamera = true;
+    this.upArrow.events.onInputDown.add(function() {
+      upArrow = true;
+    },this);
+    this.upArrow.events.onInputUp.add(function() {
+      upArrow = false;
+    },this);
+    this.upArrow.visible = false;
+
+    //Up Down
+    this.downArrow = this.game.add.sprite(140, Game.h - 40, this.arrowbmd);
+    this.downArrow.tint = 0xdcdcdc;
+    this.downArrow.alpha = 0.5;
+    this.downArrow.anchor.setTo(0.5, 0.5);
+    this.downArrow.inputEnabled = true;
+    this.downArrow.angle = 180;
+    this.downArrow.fixedToCamera = true;
+    this.downArrow.events.onInputDown.add(function() {
+      downArrow = true;
+    },this);
+    this.downArrow.events.onInputUp.add(function() {
+      downArrow = false;
+    },this);
+    this.downArrow.visible = false;
+
+    //Up Left 
+    this.leftArrow = this.game.add.sprite(60, Game.h - 100, this.arrowbmd);
+    this.leftArrow.tint = 0xdcdcdc;
+    this.leftArrow.alpha = 0.5;
+    this.leftArrow.anchor.setTo(0.5, 0.5);
+    this.leftArrow.inputEnabled = true;
+    this.leftArrow.fixedToCamera = true;
+    this.leftArrow.angle = -90;
+    this.leftArrow.events.onInputDown.add(function() {
+      leftArrow = true;
+    },this);
+    this.leftArrow.events.onInputUp.add(function() {
+      leftArrow = false;
+    },this);
+    this.leftArrow.visible = false;
+
+    //Up Right 
+    this.rightArrow = this.game.add.sprite(220, Game.h - 100, this.arrowbmd);
+    this.rightArrow.tint = 0xdcdcdc;
+    this.rightArrow.alpha = 0.5;
+    this.rightArrow.anchor.setTo(0.5, 0.5);
+    this.rightArrow.inputEnabled = true;
+    this.rightArrow.angle = 90;
+    this.rightArrow.fixedToCamera = true;
+    this.rightArrow.events.onInputDown.add(function() {
+      rightArrow = true;
+    },this);
+    this.rightArrow.events.onInputUp.add(function() {
+      rightArrow = false;
+    },this);
+    this.rightArrow.visible = false;
+
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+      this.upArrow.visible = true;
+      this.downArrow.visible = true;
+      this.leftArrow.visible = true;
+      this.rightArrow.visible = true;
+    }else{
+      this.upArrow.visible = false;
+      this.downArrow.visible = false;
+      this.leftArrow.visible = false;
+      this.rightArrow.visible = false;
+    }
+
+  },
 	makeBox: function(x,y) {
 		var bmd = this.game.add.bitmapData(x, y);
 		bmd.ctx.beginPath();
@@ -198,6 +301,9 @@ Game.Play.prototype = {
 		return bmd;
 	},
   update: function() {
+    if (this.game.activePointer) {
+      console.log('ld');
+    }
 
     this.hearts.forEach(function(heart) {
       if (checkOverlap(this.player, heart)) {

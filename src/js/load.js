@@ -34,6 +34,7 @@ Game.Boot.prototype = {
 		this.game.load.image('title', 'assets/images/title.png');
 		this.game.load.image('instructions', 'assets/images/instructions.png');
     this.game.load.bitmapFont('minecraftia', 'assets/fonts/font.png', 'assets/fonts/font.xml'); //load default font
+    this.game.load.bitmapFont('exeter', 'assets/fonts/exeter.png', 'assets/fonts/exeter.xml'); //load Exeter font
 
 
     //Scale Image to Fit Window
@@ -103,7 +104,7 @@ Game.Load.prototype = {
 
   },
   create: function() {
-    // this.game.state.start('Menu');
-    this.game.state.start('Play');
+    this.game.state.start('Menu');
+    // this.game.state.start('Play');
   }
 };
