@@ -23,6 +23,20 @@ Game.Menu.prototype =  {
         var clickText = this.game.add.bitmapText(Game.w/2, Game.h/2+100, 'minecraftia', '~click to start~', 24); 
         clickText.anchor.setTo(0.5);
 
+
+        var music_by = this.game.add.bitmapText(Game.w/2, Game.h/2+300, 'minecraftia', 'Music: A Better World by Trevor Lentz', 24);
+        music_by.anchor.setTo(0.5);
+        music_by.inputEnabled = true;
+        music_by.events.onInputDown.add(function() {
+          window.open("http://opengameart.org/content/opengameartorg-theme-a-better-world");
+        },this);
+        music_by.events.onInputOver.add(function() {
+          music_by.tint = 0xffff00;
+        },this);
+        music_by.events.onInputOut.add(function() {
+          music_by.tint = 0xffffff;
+        },this);
+
     },
     update: function() {
       //Click to Start
