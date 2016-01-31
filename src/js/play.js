@@ -12,7 +12,6 @@ function rand (min, max) {
 
 var musicOn = true;
 
-
 var wKey;
 var aKey;
 var sKey;
@@ -49,8 +48,8 @@ Game.Play.prototype = {
     this.potionSnd.volume = 0.2;
 
 
-    // this.randomEncounters = {'x0_y0':0,'x2_y0':0,'x2_y2':0,'x1_y1':0,'x0_y1':0,'x3_y1':0,'x3_y0':0};
-    this.randomEncounters = {'x0_y0':0,'x2_y0':0.1,'x2_y2':0.1,'x1_y1':0.1,'x0_y1':0.1,'x3_y1':0.1,'x3_y0':0.2};
+    this.randomEncounters = {'x0_y0':0,'x2_y0':0,'x2_y2':0,'x1_y1':0,'x0_y1':0,'x3_y1':0,'x3_y0':0};
+    // this.randomEncounters = {'x0_y0':0,'x2_y0':0.1,'x2_y2':0.1,'x1_y1':0.1,'x0_y1':0.1,'x3_y1':0.1,'x3_y0':0.2};
     this.posKey = 'x0_y0';
 
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);
@@ -301,9 +300,6 @@ Game.Play.prototype = {
 		return bmd;
 	},
   update: function() {
-    if (this.game.activePointer) {
-      console.log('ld');
-    }
 
     this.hearts.forEach(function(heart) {
       if (checkOverlap(this.player, heart)) {
@@ -312,7 +308,10 @@ Game.Play.prototype = {
         this.player.loadStats();
       }
       if (this.player.hearts === 3 && heart.frame === 0) {
-         heart.frame = 1; 
+        heart.frame = 1; 
+        this.player.reset(5, 7);
+        this.win_text.visible = true;
+        this.twitterButton.visible = true;
       }
     },this);
 
@@ -465,11 +464,11 @@ Game.Play.prototype = {
   },
   twitter: function() {
     //Popup twitter window to post highscore
-    var game_url = 'http://www.divideby5.com/games/GAMETITLE/'; 
+    var game_url = 'http://www.divideby5.com/games/lostfragments/'; 
     var twitter_name = 'rantt_';
-    var tags = ['1GAM'];
+    var tags = ['onegameaweek'];
 
-    window.open('http://twitter.com/share?text=My+best+score+is+'+score+'+playing+GAME+TITLE+See+if+you+can+beat+it.+at&via='+twitter_name+'&url='+game_url+'&hashtags='+tags.join(','), '_blank');
+    window.open('http://twitter.com/share?text=I+Put+The+Pieces+Back+Together+playing+Lost+Fragments++See+if+you+can+beat+it.+at&via='+twitter_name+'&url='+game_url+'&hashtags='+tags.join(','), '_blank');
   },
 
   toggleMute: function() {
