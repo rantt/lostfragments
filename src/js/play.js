@@ -165,11 +165,16 @@ Game.Play.prototype = {
 
     this.flee_button = this.game.add.button(Game.w - 96, 384, this.makeBox(128,64),function(){
 			if (Math.random() < this.enemy.flee) {
+        this.battleLog.setText('player successfully fled.');
 				this.player.inCombat = false;
         this.battleInitiated = false;
 				this.battleGroup.visible = false;
         this.player.alpha = 1; 
-			}
+			}else {
+        this.battleLog.setText('player failed to flee the battle.');
+        this.turn = this.enemy;
+        this.combatWait = this.game.time.now + 1000;
+      }
 		},this); 
 		this.flee_button.anchor.setTo(0.5);
 		this.flee_button.tint = 0x000000;
@@ -375,6 +380,7 @@ Game.Play.prototype = {
           enemy.frame = rand(0,1);
           enemy.exp = (enemy.power - 1)*10 + 10;
           enemy.sheet = 'skeleton';
+          enemy.flee = 0.25;
         }
 
 
@@ -480,14 +486,14 @@ Game.Play.prototype = {
       this.music.volume = 0.3;
     }
   },
-  render: function() {
-    this.hearts.forEach(function(heart) {
-      this.game.debug.body(heart); 
-    },this);
+  // render: function() {
+  //   this.hearts.forEach(function(heart) {
+  //     this.game.debug.body(heart); 
+  //   },this);
   //   this.game.debug.text('Camera: ' + JSON.stringify(Game.camera), 32, 96);
   //   this.game.debug.text('Danger: ' + this.danger, 32, 114);
     // this.game.debug.text('this.marker.x:' + this.marker.x + 'this.marker.y:'+this.marker.y, 32, 146);
     // this.game.debug.text('encounter% '+ (this.randomEncounters['x'+Game.camera.x+'_y'+Game.camera.y]), 32, 164);
-  }
+  // }
 
 };
