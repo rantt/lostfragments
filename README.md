@@ -1,6 +1,6 @@
-#(#onegameaweek - Game 2)
+#Lost Fragments (#onegameaweek - Game 4)
 
-A nice description will go here later
+Turn based micro RPG about mending a broken heart.
 
 ![screenshot](screenshots/screenshot.png)
 
