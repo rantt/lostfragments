@@ -6,8 +6,8 @@ Game.Menu = function(game){
 Game.Menu.prototype =  {
     create: function() {
         this.game.stage.backgroundColor = '#192331';
-        // this.title = this.game.add.sprite(Game.w/2,Game.h/2-100,'title');
-        // this.title.anchor.setTo(0.5,0.5);
+
+        this.game.add.tileSprite(0, 0, Game.w, Game.h, 'menu_bg');
 
         this.title = this.game.add.bitmapText(Game.w/2, Game.h/2-100,'exeter','Lost Fragments',64);
         this.title.anchor.setTo(0.5);

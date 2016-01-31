@@ -70,29 +70,21 @@ Game.Load.prototype = {
     //Load button for twitter
     this.game.load.image('twitter','assets/images/twitter.png');
 
-    // this.game.load.tilemap('test','assets/atlas/test.json',null,Phaser.Tilemap.TILED_JSON);
     this.game.load.tilemap('level1','assets/atlas/level1.json',null,Phaser.Tilemap.TILED_JSON);
     this.game.load.spritesheet('tiles','assets/images/tiles.png',tileSize,tileSize,19);
-    // this.game.load.spritesheet('town','assets/images/town.png',tileSize,tileSize,36);
 
     this.game.load.spritesheet('player','assets/images/hero_x64.png',64,64,12);
     this.game.load.spritesheet('box','assets/images/box_tiles.png',64,64,3);
 
-    // this.game.load.image('bg1', 'assets/images/battle_bg1.png');
     this.game.load.spritesheet('backdrops', 'assets/images/backdrops.png',400,320,4);
     this.game.load.spritesheet('hearts', 'assets/images/hearts.png',96,72,12);
 
+    //Monsters
     this.game.load.spritesheet('slime', 'assets/images/slime.png',64,64,3);
     this.game.load.spritesheet('rat', 'assets/images/rat.png',64,64,2);
     this.game.load.image('skeleton', 'assets/images/skeleton.png',64,100);
 
-    // this.game.load.image('slime', 'assets/images/slime.png');
-    this.game.load.spritesheet('dad','assets/images/npc_dad.png',64,64,12);
-
-    this.game.load.image('textbox','assets/images/textbox.png',64,64);
-
-    spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
+    this.game.load.image('menu_bg','assets/images/menu6.png',64,64);
 
     //SFX
     this.game.load.audio('attack','assets/audio/attack.wav');

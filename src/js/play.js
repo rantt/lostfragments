@@ -48,8 +48,8 @@ Game.Play.prototype = {
     this.potionSnd.volume = 0.2;
 
 
-    this.randomEncounters = {'x0_y0':0,'x2_y0':0,'x2_y2':0,'x1_y1':0,'x0_y1':0,'x3_y1':0,'x3_y0':0};
-    // this.randomEncounters = {'x0_y0':0,'x2_y0':0.1,'x2_y2':0.1,'x1_y1':0.1,'x0_y1':0.1,'x3_y1':0.1,'x3_y0':0.2};
+    // this.randomEncounters = {'x0_y0':0,'x2_y0':0,'x2_y2':0,'x1_y1':0,'x0_y1':0,'x3_y1':0,'x3_y0':0};
+    this.randomEncounters = {'x0_y0':0,'x2_y0':0.1,'x2_y2':0.1,'x1_y1':0.1,'x0_y1':0.1,'x3_y1':0.15,'x3_y0':0.25};
     this.posKey = 'x0_y0';
 
     this.game.world.setBounds(0, 0 ,Game.w ,Game.h);

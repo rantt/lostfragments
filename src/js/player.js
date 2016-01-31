@@ -95,7 +95,7 @@ Player.prototype.refreshStats = function() {
   this.health_text.setText('Health: '+this.health);
   this.potion_text.setText('Potions: '+this.potion);
   this.heart_text.setText('Heart:'+this.hearts+'/3');
-  this.exp_text.setText('Exp:'+this.exp+'/'+this.nextLevel);
+  this.exp_text.setText('Exp:\n'+this.exp+'/'+this.nextLevel);
 };
 Player.prototype.maxHealth = function() {
 	return 8 + this.level * 2;
@@ -109,7 +109,7 @@ Player.prototype.addExp = function(exp) {
   }
 };
 Player.prototype.takePotion = function() {
-  if (this.potions <= 0) {return;}
+  if (this.potion <= 0) {return;}
   var hp = Math.ceil(this.maxHealth()/3);
 
   this.potion--;
