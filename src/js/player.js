@@ -8,7 +8,7 @@ var Player = function(game, tilex, tiley, map) {
   this.potion = 3;
   this.inCombat = false;
   this.isMoving = false;
-  this.nextLevel = 100;
+  this.nextLevel = 80;
   this.exp = 0;
 
   this.map = map;
@@ -105,7 +105,7 @@ Player.prototype.addExp = function(exp) {
   if (this.exp >= this.nextLevel) {
     this.exp = this.exp - this.nextLevel;
     this.level++;
-    this.nextLevel = this.level*100; 
+    this.nextLevel = this.nextLevel + (this.level-1)*20; 
   }
 };
 Player.prototype.takePotion = function() {

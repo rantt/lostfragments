@@ -94,6 +94,8 @@ Game.Play.prototype = {
     this.player.level = lfLvl;
     this.player.potion = lfPots;
     this.player.exp = lfExp;
+    this.player.health = this.player.maxHealth();
+    this.player.nextLevel = 80 + (this.player.level-1)*20; 
 
     this.lastPosition = new Phaser.Point(5, 4);
 
@@ -306,6 +308,7 @@ Game.Play.prototype = {
 	},
   update: function() {
 
+    //Pickup Heart
     this.hearts.forEach(function(heart) {
       if (checkOverlap(this.player, heart)) {
         heart.destroy(); 
@@ -320,6 +323,7 @@ Game.Play.prototype = {
       }
     },this);
 
+    //Read Signs
     this.signs.forEach(function(sign) {
       if (checkOverlap(this.player, sign)) {
         this.lastRead = this.game.time.now + 500;
@@ -341,7 +345,7 @@ Game.Play.prototype = {
     if (this.player.inCombat) {
       if (this.battleInitiated === false) {
         
-        var enemy =  {'sheet': 'slime', 'health': 4, 'power': 1,'flee': 1,'frame':0,'level': 1,'exp':20,'potions':rand(0,1)}; //default enemy
+        var enemy =  {'sheet': 'slime', 'health': 3, 'power': 1,'flee': 1,'frame':0,'level': 1,'exp':20,'potions':rand(0,1)}; //default enemy
         
           // if (this.posKey === 'x0_y0') {
           //   this.battleGround.frame = 2;
@@ -351,31 +355,29 @@ Game.Play.prototype = {
         }else if (this.posKey === 'x2_y2') {
           this.battleGround.frame = 0;
           enemy.frame = 1;
-          enemy.power = rand(1,3);
+          enemy.power = rand(1,2);
           enemy.level = enemy.power;
           enemy.exp = (enemy.power - 1)*10 + 10;
         }else if(this.posKey === 'x1_y1' || this.posKey === 'x0_y1') {
           this.battleGround.frame = 1;
           enemy.frame = 2;
           enemy.health = 8;
-          enemy.power = rand(3,5);
+          enemy.power = rand(3,4);
           enemy.level = enemy.power;
           enemy.exp = (enemy.power - 1)*10 + 10;
         }else if (this.posKey === 'x3_y1') {
           this.battleGround.frame = 2;
-          enemy.health = 12;
+          enemy.health = 8;
           enemy.frame = 0;
-          enemy.power = 6;
+          enemy.power = rand(4,5);
           enemy.level = enemy.power+2;
           enemy.frame = rand(0,1);
           enemy.exp = (enemy.power - 1)*10 + 10;
           enemy.sheet = 'rat';
         }else if (this.posKey === 'x3_y0') {
           this.battleGround.frame = 3;
-          enemy.health = 15;
-          enemy.frame = 3;
-          enemy.flee = 0.5;
-          enemy.power = rand(8,10);
+          enemy.health = 8;
+          enemy.power = 5;
           enemy.level = enemy.power+2;
           enemy.frame = rand(0,1);
           enemy.exp = (enemy.power - 1)*10 + 10;

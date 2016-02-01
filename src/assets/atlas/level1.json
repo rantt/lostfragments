@@ -102,7 +102,7 @@
                  "name":"",
                  "properties":
                     {
-                     "text":"To desert palace...sounds dangerous (LVL10)"
+                     "text":"To desert palace...sounds dangerous (LVL5-7)"
                     },
                  "type":"",
                  "visible":true,
@@ -116,7 +116,7 @@
                  "name":"",
                  "properties":
                     {
-                     "text":"To Pond: Sounds Easy (LVL3)"
+                     "text":"To Pond: Sounds Easy (LVL2-3)"
                     },
                  "type":"",
                  "visible":true,
@@ -130,7 +130,7 @@
                  "name":"",
                  "properties":
                     {
-                     "text":"To Court Yard: Be Careful (LVL5)"
+                     "text":"To Court Yard: Be Careful (LVL3-4)"
                     },
                  "type":"",
                  "visible":true,
