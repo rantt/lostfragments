@@ -90,6 +90,7 @@ Game.Load.prototype = {
     this.game.load.audio('attack','assets/audio/attack.wav');
     this.game.load.audio('hit','assets/audio/hit.wav');
     this.game.load.audio('potion','assets/audio/potion.wav');
+    this.game.load.audio('levelup','assets/audio/levelup.wav');
 
     // Music Track
     this.game.load.audio('music',['assets/audio/a_better_world.ogg','assets/audio/a_better_world.mp3']);

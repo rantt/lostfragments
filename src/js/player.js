@@ -10,6 +10,8 @@ var Player = function(game, tilex, tiley, map) {
   this.isMoving = false;
   this.nextLevel = 80;
   this.exp = 0;
+  this.levelupSnd = this.game.add.sound('levelup');
+  this.levelupSnd.volume = 0.2;
 
   this.map = map;
   this.marker = new Phaser.Point(tilex,tiley);
@@ -103,6 +105,7 @@ Player.prototype.maxHealth = function() {
 Player.prototype.addExp = function(exp) {
   this.exp += exp;
   if (this.exp >= this.nextLevel) {
+    this.levelupSnd.play();
     this.exp = this.exp - this.nextLevel;
     this.level++;
     this.nextLevel = this.nextLevel + (this.level-1)*20; 
